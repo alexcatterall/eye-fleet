@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,10 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_swagger', # swagger UI
-    'drf_yasg', # swagger UI generator
-    'django_filters',
-    'channels',
     'corsheaders',
     'livetracking',
     'maintenance',
@@ -145,6 +141,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True
+
+# REST framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
+
+# ASGI Application
+ASGI_APPLICATION = 'eyefleet.asgi.application'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
