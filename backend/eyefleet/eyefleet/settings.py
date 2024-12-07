@@ -41,10 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_swagger', # swagger UI
+    'drf_yasg', # swagger UI generator
+    'django_filters',
+    'channels',
     'corsheaders',
-    'livetracking',
-    'maintenance',
-    'scheduling',
+    'eyefleet.apps.livetracking',
+    'eyefleet.apps.maintenance',
+    'eyefleet.apps.scheduling',
 ]
 
 MIDDLEWARE = [
