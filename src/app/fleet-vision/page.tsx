@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import BackButton from '@/components/BackButton';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -118,6 +119,7 @@ const FleetVision = () => {
           </div>
         </div>
       </div>
+      <BackButton />
     </div>
   );
 };
