@@ -69,53 +69,73 @@ const FleetVision = () => {
           <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Fleet Assistant</h2>
         </div>
 
-        <div className="flex-1 p-4 overflow-y-auto space-y-4">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
+        {/* Chat Section */}
+        <div className="flex-1 flex flex-col h-1/2 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex-1 p-4 overflow-y-auto space-y-4">
+            {messages.map((message, index) => (
               <div
-                className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                  message.role === 'user'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white'
-                }`}
+                key={index}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                {message.content}
-              </div>
-            </div>
-          ))}
-          {isGenerating && (
-            <div className="flex justify-start">
-              <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-2">
-                <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                <div
+                  className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                    message.role === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white'
+                  }`}
+                >
+                  {message.content}
                 </div>
               </div>
+            ))}
+            {isGenerating && (
+              <div className="flex justify-start">
+                <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-2">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder="Ask about fleet locations..."
+                className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={isGenerating || !inputMessage.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Send
+              </button>
             </div>
-          )}
+          </div>
         </div>
 
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex space-x-2">
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Ask about fleet locations..."
-              className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            />
-            <button
-              onClick={handleSendMessage}
-              disabled={isGenerating || !inputMessage.trim()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Send
-            </button>
+        {/* Context Section */}
+        <div className="flex-1 h-1/2 p-4 overflow-y-auto">
+          <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Context</h3>
+          <div className="space-y-4 text-gray-600 dark:text-gray-300">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+              {/* Display relevant context from the conversation here */}
+              {messages.length > 0 && messages[messages.length - 1].role === 'assistant' && (
+                <div className="prose dark:prose-invert max-w-none">
+                  <p className="text-sm">
+                    {messages[messages.length - 1].content}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
