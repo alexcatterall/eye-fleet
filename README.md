@@ -66,11 +66,8 @@ eye-fleet/
 
 ## API Endpoints
 
-- `GET /api/vehicles/` - List all vehicles
-- `POST /api/vehicles/` - Add a new vehicle
-- `GET /api/vehicles/{id}/` - Get vehicle details
-- `PUT /api/vehicles/{id}/` - Update vehicle
-- `DELETE /api/vehicles/{id}/` - Delete vehicle
+
+add an asset:(http://localhost:8000/api/maintenance/assets/) 
 
 ## Development
 
