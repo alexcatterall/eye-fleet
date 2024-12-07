@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 from django.core.validators import MinValueValidator
 from eyefleet.apps.maintenance.models.inspections import Location, Inspection
 from eyefleet.apps.maintenance.models.assets import Asset, ASSET_TYPE_CHOICES
@@ -86,7 +85,12 @@ class Maintenance(models.Model):
     previous_maintenance = models.ForeignKey('self', on_delete=models.PROTECT, null=True, blank=True)
 
     attachments = models.JSONField(default=list)
-
+    required_skills = models.ManyToManyField('MechanicSkill', blank=True)
+    additional_costs = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
     # organization and created at
     organization = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

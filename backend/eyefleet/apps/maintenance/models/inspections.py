@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 from django.core.validators import MinValueValidator
 from eyefleet.apps.maintenance.models.assets import Asset, ASSET_TYPE_CHOICES
 

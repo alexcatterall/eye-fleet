@@ -2,6 +2,7 @@ from .missions import Mission, MissionAssignedEmployee, MISSION_STATUS_CHOICES, 
 from .cargo import Cargo
 from .clients import CLIENT_SOURCE_CHOICES, CLIENT_SERVICE_CHOICES, CLIENT_STATUS_CHOICES
 from .schedules import MissionSchedule, Trip
+from .pilots import Pilot
 
 __all__ = [
     'Mission',
@@ -16,5 +17,5 @@ __all__ = [
     'CLIENT_SOURCE_CHOICES',
     'CLIENT_SERVICE_CHOICES', 
     'CLIENT_STATUS_CHOICES',
-
+    'Pilot',
 ]

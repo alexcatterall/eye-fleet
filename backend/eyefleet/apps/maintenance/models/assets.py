@@ -1,7 +1,6 @@
 from django.db import models
 import uuid
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.utils import timezone
 
 
 # Define asset type choices
@@ -47,6 +46,8 @@ class Asset(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         null=True, blank=True
     )
+    capacity_weight = models.FloatField(validators=[MinValueValidator(0)], null=True, blank=True)
+    capacity_volume = models.FloatField(validators=[MinValueValidator(0)], null=True, blank=True)
     # torque_settings = models.FloatField(null=True, blank=True)
     # vin = models.CharField(max_length=20, null=True, blank=True)
     on_trip = models.BooleanField(default=False)
@@ -60,24 +61,3 @@ class Asset(models.Model):
 
     def __str__(self) -> str:
         return self.registration_number
-
-    @staticmethod
-    def count_on_route_assets(asset_list: list['Asset']) -> int:
-        """Count assets currently on route"""
-        return len([a for a in asset_list if a.status == 'on_route'])
-
-    def get_numeric_mileage(self) -> int:
-        """Extract numeric mileage value"""
-        return int(self.mileage.split()[0])
-
-    def is_low_fuel(self, threshold: int = 20) -> bool:
-        """Check if asset has low fuel"""
-        return self.fuel_level <= threshold
-
-    def is_active(self) -> bool:
-        """Check if asset is actively in service"""
-        return self.status in ['on_route', 'available']
-
-    def time_since_update(self) -> float:
-        """Calculate hours since last update"""
-        return (timezone.now() - self.updated_at).total_seconds() / 3600

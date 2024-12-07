@@ -35,6 +35,7 @@ class MechanicSkill(models.Model):
 
 class Mechanic(models.Model):
     """Represents maintenance staff"""
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     skills = models.ManyToManyField(MechanicSkill)
     hourly_rate = models.DecimalField(
@@ -68,6 +69,7 @@ class MechanicAvailability(models.Model):
 
 class MaintenanceBay(models.Model):
     """Physical locations where maintenance can be performed"""
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     location = models.CharField(
         max_length=50,

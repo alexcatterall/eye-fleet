@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 from influxdb_client import InfluxDBClient, Point, BucketRetentionRules
 from influxdb_client.client.write_api import SYNCHRONOUS
 from django.conf import settings
-import json
 
 fake = Faker()
 

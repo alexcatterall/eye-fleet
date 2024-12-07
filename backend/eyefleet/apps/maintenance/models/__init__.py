@@ -8,7 +8,7 @@ from .maintenance import (
     MaintenanceRequest, Maintenance
 )
 from .parts import (
-    AssetPartType, AssetPartManufacturer, AssetPartSupplier, AssetPart
+    AssetPartSupplier, AssetPart
 )
 from .scheduling import (
     MaintenanceWindow, MechanicSkill, Mechanic, MechanicAvailability,
@@ -21,7 +21,7 @@ __all__ = [
     'InspectionField', 'InspectionResponse', 'InspectionFieldResponse',
     'MaintenanceType', 'MaintenanceStatus', 'MaintenancePriority',
     'MaintenanceRequest', 'Maintenance',
-    'AssetPartType', 'AssetPartManufacturer', 'AssetPartSupplier', 'AssetPart',
+    'AssetPartSupplier', 'AssetPart',
     'MaintenanceWindow', 'MechanicSkill', 'Mechanic', 'MechanicAvailability',
     'MaintenanceBay', 'MaintenanceSchedule'
 ]
