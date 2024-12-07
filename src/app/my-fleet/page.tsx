@@ -4,17 +4,19 @@ import { useEffect, useState } from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import BackButton from '@/components/BackButton';
 import Logo from '@/components/Logo';
+import { useRouter } from 'next/navigation';
 
 interface Vehicle {
-  id: number;
-  make: string;
+  registration_number: string;
+  manufacturer: string;
   model: string;
-  year: number;
-  license_plate: string;
+  type: string;
+  driver: string;
   status: string;
-  mileage: number;
-  location_lat: number;
-  location_lng: number;
+  location: string;
+  fuel_level: number;
+  on_trip: boolean;
+  mileage: string;
 }
 
 const containerStyle = {
@@ -28,6 +30,7 @@ const center = {
 };
 
 export default function MyFleet() {
+  const router = useRouter();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -39,7 +42,7 @@ export default function MyFleet() {
 
   const fetchVehicles = async () => {
     try {
-      const response = await fetch('/api/vehicles/'); // Correct API endpoint for listing all vehicles
+      const response = await fetch('http://localhost:8000/api/maintenance/assets/');
       if (!response.ok) {
         throw new Error('Failed to fetch vehicles');
       }
@@ -113,9 +116,9 @@ export default function MyFleet() {
           >
             {vehicles.map((vehicle) => (
               <Marker
-                key={vehicle.id}
-                position={{ lat: Number(vehicle.location_lat), lng: Number(vehicle.location_lng) }}
-                title={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+                key={vehicle.registration_number}
+                position={{ lat: -33.865143, lng: 151.209900 }}
+                title={`${vehicle.manufacturer} ${vehicle.model}`}
               />
             ))}
           </GoogleMap>
@@ -135,26 +138,36 @@ export default function MyFleet() {
                   Vehicle
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  License Plate
+                  Registration
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Driver
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Mileage
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Fuel Level
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Actions
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {vehicles.map((vehicle) => (
-                <tr key={vehicle.id}>
+                <tr key={vehicle.registration_number}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {vehicle.year} {vehicle.make} {vehicle.model}
+                      {vehicle.manufacturer} {vehicle.model}
                     </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-300">{vehicle.type}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 dark:text-gray-300">{vehicle.license_plate}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-300">{vehicle.registration_number}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -166,9 +179,31 @@ export default function MyFleet() {
                     }`}>
                       {vehicle.status}
                     </span>
+                    {vehicle.on_trip && (
+                      <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        On Trip
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                    {vehicle.mileage.toLocaleString()} km
+                    {vehicle.driver || 'Unassigned'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {vehicle.mileage} km
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {vehicle.fuel_level}%
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button
+                      onClick={() => {
+                        console.log('Editing vehicle:', vehicle.registration_number);
+                        router.push(`/edit-vehicle?id=${encodeURIComponent(vehicle.registration_number)}`);
+                      }}
+                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Edit
+                    </button>
                   </td>
                 </tr>
               ))}
