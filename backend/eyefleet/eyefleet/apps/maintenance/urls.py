@@ -6,7 +6,7 @@ from .viewsets import (
     InspectionStatusViewSet, LocationViewSet, InspectionFieldViewSet,
     InspectionFieldResponseViewSet, InspectionResponseViewSet, InspectionViewSet,
     AssetViewSet, AssetPartTypeViewSet, AssetPartManufacturerViewSet,
-    AssetPartSupplierViewSet, AssetPartViewSet, MaintenanceAIChatView
+    AssetPartSupplierViewSet, AssetPartViewSet
 )
 
 router = DefaultRouter()
@@ -40,5 +40,5 @@ urlpatterns = [
     path('', include(router.urls)),
 
     # Add the AI chat endpoint
-    path('ai/chat/', MaintenanceAIChatView.as_view(), name='maintenance-ai-chat'),
+    # path('ai/chat/', MaintenanceAIChatView.as_view(), name='maintenance-ai-chat'),
 ]
