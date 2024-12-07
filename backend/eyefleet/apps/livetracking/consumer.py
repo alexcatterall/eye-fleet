@@ -98,34 +98,3 @@ class GPSConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message
         }))
-
-
-class AnalyticsConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.device_id = self.scope['url_route']['kwargs']['device_id']
-        self.device_group_name = f'analytics_{self.device_id}'
-        print(f"new analytics consumer connection attempt for device {self.device_id}")
-        await self.channel_layer.group_add(self.device_group_name, self.channel_name)
-        await self.accept()
-
-    async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.device_group_name, self.channel_name)
-        print(f"analytics consumer disconnected with code {close_code}")
-
-
-    async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json['message']
-        await self.channel_layer.group_send(
-            self.device_group_name,
-            {
-                'type': 'send_analytics_data',
-                'message': message
-            }
-        )
-
-    async def send_analytics_data(self, event):
-        message = event['message']
-        await self.send(text_data=json.dumps({
-            'message': message
-        }))

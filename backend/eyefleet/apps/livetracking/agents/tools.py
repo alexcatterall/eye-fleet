@@ -1,10 +1,9 @@
-from typing import List, Dict
+import os
 import pandas as pd
 from influxdb_client import InfluxDBClient
 from django.conf import settings
-from llama_index import VectorStoreIndex, Document
-from llama_index.query_engine import PandasQueryEngine
-from datetime import datetime, timedelta
+from llama_index.core.query_engine import PandasQueryEngine
+from ..models import Device, Indicator
 
 class LivetrackingTools:
     """Tools for livetracking data analysis and querying"""

@@ -5,45 +5,18 @@ import uuid
 
 # Device status options
 DEVICE_STATUS_CHOICES = [
-    ('online', 'Online'),
-    ('offline', 'Offline'), 
-    ('maintenance', 'Maintenance'),
-    ('error', 'Error')
+    ('online', 'online'),
+    ('offline', 'offline'), 
+    ('maintenance', 'maintenance'),
+    ('error', 'error')
 ]
 
 # Device type options
 DEVICE_TYPE_CHOICES = [
+    ('gps', 'GPS Tracker'),
+    ('obd', 'OBD-II Scanner'),
     ('eyefleet-hardware', 'eyefleet Hardware'),
-    ('autopi', 'AutoPi')
 ]
-
-# DEFINE CONFIG MODELS
-class DeviceConfiguration(models.Model):
-    id = models.UUIDField(primary_key=True, 
-                          default=uuid.uuid4, 
-                          editable=False)
-    name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
-    device_type = models.CharField(max_length=50, choices=DEVICE_TYPE_CHOICES)
-    firmware_version = models.CharField(max_length=20)
-    settings = models.JSONField(default=dict)
-    last_updated = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'device_configurations'
-
-    def update_firmware(self, version: str):
-        """Update firmware version"""
-        self.firmware_version = version
-        self.save()
-
-    def update_settings(self, new_settings: dict):
-        """Update device settings"""
-        self.settings.update(new_settings)
-        self.save()
-
-    def __str__(self):
-        return self.id
 
 # DEFINE CORE MODELS
 class Device(models.Model):
@@ -66,12 +39,9 @@ class Device(models.Model):
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
-    configuration = models.ForeignKey(
-        DeviceConfiguration,
-        null=True, blank=True,
-        on_delete=models.SET_NULL
-    )
-    assigned_vehicle = models.TextField(null=True, blank=True)
+    device_type = models.CharField(max_length=50, choices=DEVICE_TYPE_CHOICES)
+    firmware_version = models.CharField(max_length=20)
+    assigned_asset = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -88,31 +58,3 @@ class Device(models.Model):
                 num = 1
                 self.id = f'DEV-{num:08d}'
         super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.id
-    
-    def ping(self) -> bool:
-        """Update last ping time and connection status"""
-        self.last_pinged = timezone.now()
-        self.save()
-        return self.connected
-
-    def update_status(self, status: str):
-        """Update device status"""
-        if status in dict(DEVICE_STATUS_CHOICES):
-            self.status = status
-            self.save()
-
-    def update_location(self, lat: float, lng: float):
-        """Update device location"""
-        self.location = {"lat": lat, "lng": lng}
-        self.save()
-
-    def is_online(self) -> bool:
-        """Check if device is online"""
-        return self.status == "online" and self.connected
-
-    def has_low_battery(self, threshold: int = 20) -> bool:
-        """Check if device has low battery"""
-        return self.battery_level is not None and self.battery_level <= threshold

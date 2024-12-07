@@ -8,11 +8,6 @@ websocket_urlpatterns = [
         name="device-telemetry",
     ),
     re_path(
-        r"ws/livetracking/analytics/(?P<device_id>[\w-]+)/$",
-        AnalyticsConsumer.as_asgi(),
-        name="analytics-data",
-    ),
-    re_path(
         r"ws/livetracking/gps/",
         GPSConsumer.as_asgi(),
         name="gps-telemetry",
