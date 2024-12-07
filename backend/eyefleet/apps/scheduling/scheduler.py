@@ -1,13 +1,14 @@
 from ortools.sat.python import cp_model
 
 # Import typing hints to help with code readability and error checking
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Any
 
 # Import date/time utilities for handling schedules
 from datetime import datetime, timedelta
 
 # Import Django's timezone utilities for handling timezone-aware dates
 from django.utils import timezone
+from django.db.models import Avg, Count
 
 # Import our custom models that represent database tables
 from .models.missions import Mission
@@ -17,9 +18,7 @@ from eyefleet.apps.maintenance.models.assets import Asset
 # Import libraries for route optimization
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
-from typing import List, Dict, Tuple
 import numpy as np
-from datetime import datetime, timedelta
 from dataclasses import dataclass
 import googlemaps  # For calculating real driving distances/times
 from django.conf import settings
