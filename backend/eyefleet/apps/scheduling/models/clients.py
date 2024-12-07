@@ -64,7 +64,7 @@ class Client(models.Model):
     address = models.TextField(blank=True, null=True)
 
     avatar = models.URLField()
-    case_ref = models.CharField(max_length=50, unique=True)
+    case_ref = models.CharField(max_length=50)
     opened_at = models.DateField()
 
     source = models.CharField(max_length=50, choices=CLIENT_SOURCE_CHOICES)

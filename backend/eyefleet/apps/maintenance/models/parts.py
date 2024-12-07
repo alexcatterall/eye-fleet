@@ -35,8 +35,8 @@ class AssetPart(models.Model):
     part_number = models.CharField(max_length=50)
     after_market = models.BooleanField(default=False)
     
-    part_type = models.CharField(max_length=20, choices=PART_TYPE_CHOICES)
-    manufacturer = models.CharField(max_length=20, choices=MANUFACTURER_CHOICES)
+    part_type = models.CharField(max_length=20, choices=PART_TYPE_CHOICES, blank=True, null=True)
+    manufacturer = models.CharField(max_length=20, choices=MANUFACTURER_CHOICES, blank=True, null=True)
 
     purchased_at = models.DateField()
     delivered_at = models.DateField()

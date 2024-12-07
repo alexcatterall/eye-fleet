@@ -89,7 +89,10 @@ class Maintenance(models.Model):
     additional_costs = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
+        default=0,
+        blank=True,
+        null=True
     )
     # organization and created at
     organization = models.CharField(max_length=100, blank=True, null=True)
