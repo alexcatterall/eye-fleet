@@ -1,5 +1,5 @@
-from llama_index import VectorStoreIndex, Document
-from llama_index.node_parser import SimpleNodeParser
+from llama_index.core import VectorStoreIndex, Document
+from llama_index.core.node_parser import SimpleNodeParser
 from typing import List
 from ..models import Device, Indicator
 from influxdb_client import InfluxDBClient
@@ -53,7 +53,7 @@ class LivetrackingIndex:
                 Device ID: {device.id}
                 Name: {device.name}
                 Status: {device.status}
-                Vehicle: {device.assigned_vehicle}
+                Asset: {device.assigned_asset}
                 Location: {device.location}
                 Battery Level: {device.battery_level}
                 Recent Telemetry Stats: {stats}
@@ -73,8 +73,6 @@ class LivetrackingIndex:
                 Description: {indicator.description}
                 Min Value: {indicator.min_value}
                 Max Value: {indicator.max_value}
-                Warning Threshold: {indicator.warning_threshold}
-                Critical Threshold: {indicator.critical_threshold}
                 """
             )
             documents.append(doc)

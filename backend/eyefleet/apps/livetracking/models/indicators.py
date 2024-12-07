@@ -31,13 +31,6 @@ class Indicator(models.Model):
     min_value = models.FloatField(null=True, blank=True)
     max_value = models.FloatField(null=True, blank=True)
 
-    warning_threshold = models.FloatField(null=True, blank=True)
-    critical_threshold = models.FloatField(null=True, blank=True)
-
-    enabled = models.BooleanField(default=True)
-    last_reading = models.FloatField(null=True, blank=True)
-    last_reading_time = models.DateTimeField(null=True, blank=True)
-    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
