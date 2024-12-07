@@ -14,10 +14,10 @@ ASSET_TYPE_CHOICES = [
 
 # Define asset status choices
 ASSET_STATUS_CHOICES = [
-    ('on_route', 'On Route'),
-    ('maintenance', 'Maintenance'),
-    ('available', 'Available'),
-    ('out_of_service', 'Out of Service')
+    ('On Route', 'On Route'),
+    ('Maintenance', 'Maintenance'),
+    ('Available', 'Available'),
+    ('Out of Service', 'Out of Service')
 ]
 
 class Asset(models.Model):

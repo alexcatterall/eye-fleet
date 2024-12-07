@@ -23,6 +23,11 @@ from eyefleet.apps.maintenance.serializers import (
     AssetPartSerializer
 )
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from agents.server import MaintenanceAIService
+
 # Maintenance related viewsets
 class MaintenanceTypeViewSet(viewsets.ModelViewSet):
     queryset = MaintenanceType.objects.all()
@@ -94,3 +99,49 @@ class AssetPartSupplierViewSet(viewsets.ModelViewSet):
 class AssetPartViewSet(viewsets.ModelViewSet):
     queryset = AssetPart.objects.all()
     serializer_class = AssetPartSerializer
+
+
+class MaintenanceAIChatView(APIView):
+    """REST API endpoint for chatting with the maintenance AI"""
+    
+    def __init__(self):
+        super().__init__()
+        self.ai_service = MaintenanceAIService()
+    
+    def post(self, request):
+        """
+        Handle chat messages via REST
+        
+        Expected request body:
+        {
+            "message": "string"
+        }
+        """
+        message = request.data.get('message')
+        
+        if not message:
+            return Response(
+                {
+                    "error": "message is required",
+                    "status": "error"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            result = self.ai_service.chat(message)
+            return Response(
+                {
+                    "status": "success",
+                    **result
+                },
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "error": str(e),
+                    "status": "error"
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
