@@ -15,6 +15,7 @@ const FleetVision = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [contextMessages, setContextMessages] = useState<string[]>([]);
 
   React.useEffect(() => {
     const map = new mapboxgl.Map({
@@ -59,6 +60,10 @@ const FleetVision = () => {
     }
   };
 
+  const handlePushToContext = (message: string) => {
+    setContextMessages(prev => [...prev, message]);
+  };
+
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       <div id="map" style={{ flex: 1 }}></div>
@@ -77,14 +82,24 @@ const FleetVision = () => {
                 key={index}
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div
-                  className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                    message.role === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white'
-                  }`}
-                >
-                  {message.content}
+                <div className="flex flex-col">
+                  <div
+                    className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                      message.role === 'user'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white'
+                    }`}
+                  >
+                    {message.content}
+                  </div>
+                  {message.role === 'assistant' && (
+                    <button
+                      onClick={() => handlePushToContext(message.content)}
+                      className="text-sm text-blue-600 dark:text-blue-400 mt-1 hover:underline"
+                    >
+                      Push to Context
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -126,16 +141,11 @@ const FleetVision = () => {
         <div className="flex-1 h-1/2 p-4 overflow-y-auto">
           <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Context</h3>
           <div className="space-y-4 text-gray-600 dark:text-gray-300">
-            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-              {/* Display relevant context from the conversation here */}
-              {messages.length > 0 && messages[messages.length - 1].role === 'assistant' && (
-                <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-sm">
-                    {messages[messages.length - 1].content}
-                  </p>
-                </div>
-              )}
-            </div>
+            {contextMessages.map((context, index) => (
+              <div key={index} className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <p className="text-sm">{context}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
