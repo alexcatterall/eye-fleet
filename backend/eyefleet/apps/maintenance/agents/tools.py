@@ -4,7 +4,8 @@ from datetime import datetime, timedelta
 from ..models.maintenance import Maintenance, MaintenanceType, MaintenanceStatus
 from ..models.assets import Asset
 from ..models.inspections import Inspection
-from ..services.scheduler import MaintenanceScheduler
+from ..scheduler import MaintenanceScheduler
+from collections import Counter
 
 class MaintenanceTools:
     """Tools for maintenance-related operations"""
@@ -62,6 +63,25 @@ class MaintenanceTools:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
+    @staticmethod 
+    def get_common_issues(maintenances: List[Maintenance]) -> List[Dict[str, Any]]:
+        """Analyze maintenance records to identify common issues"""
+        # Count maintenance types
+        maintenance_types = Counter(m.type.id for m in maintenances)
+        
+        # Get the top 5 most common maintenance types
+        common_issues = []
+        for type_id, count in maintenance_types.most_common(5):
+            maintenance_type = MaintenanceType.objects.get(id=type_id)
+            common_issues.append({
+                "type": type_id,
+                "description": maintenance_type.description,
+                "count": count,
+                "percentage": (count / len(maintenances)) * 100 if maintenances else 0
+            })
+            
+        return common_issues
+
     @staticmethod
     def analyze_maintenance_patterns(asset_id: str) -> Dict[str, Any]:
         """Analyze maintenance patterns for predictive insights"""
@@ -81,7 +101,7 @@ class MaintenanceTools:
                 "success": True,
                 "average_maintenance_interval": avg_interval,
                 "total_maintenances": len(maintenances),
-                "common_issues": self._get_common_issues(maintenances)
+                "common_issues": MaintenanceTools.get_common_issues(maintenances)
             }
         except Exception as e:
             return {"success": False, "error": str(e)}

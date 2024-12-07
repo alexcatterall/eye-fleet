@@ -1,6 +1,7 @@
-from crewai import Agent, Task, Crew
+from llama_index.core.tools import FunctionTool
+from llama_index.agent.openai import OpenAIAgent
 from .tools import MaintenanceTools
-from .index import MaintenanceIndex
+from .knowledgebase import MaintenanceIndex
 
 class MaintenanceAgents:
     """Manages AI agents for maintenance operations"""
@@ -10,68 +11,45 @@ class MaintenanceAgents:
         self.index = MaintenanceIndex()
         self.index.build_index()
         
-    def create_agents(self):
-        """Create specialized maintenance agents"""
+    def create_agent(self):
+        """Create a LlamaIndex agent with maintenance tools and knowledge"""
         
-        # Maintenance Planner Agent
-        planner = Agent(
-            name="Maintenance Planner",
-            goal="Optimize maintenance schedules and resource allocation",
-            backstory="""Expert maintenance planner with deep knowledge of 
-            fleet maintenance operations and resource optimization.""",
-            tools=[
-                self.tools.schedule_maintenance,
-                self.tools.analyze_maintenance_patterns
-            ]
-        )
-        
-        # Maintenance Analyst Agent
-        analyst = Agent(
-            name="Maintenance Analyst",
-            goal="Analyze maintenance data and provide insights",
-            backstory="""Data analyst specialized in maintenance patterns 
-            and predictive maintenance.""",
-            tools=[
-                self.tools.get_asset_history,
-                self.tools.analyze_maintenance_patterns
-            ]
-        )
-        
-        # Knowledge Base Agent
-        knowledge_agent = Agent(
-            name="Maintenance Knowledge Base",
-            goal="Provide accurate maintenance information and documentation",
-            backstory="""Maintenance knowledge expert with access to all 
-            historical maintenance records and procedures.""",
-            tools=[self.index.query]
-        )
-        
-        return [planner, analyst, knowledge_agent]
-    
-    def create_crew(self):
-        """Create a maintenance crew with all agents"""
-        agents = self.create_agents()
-        return Crew(
-            agents=agents,
-            tasks=self.get_default_tasks()
-        )
-    
-    def get_default_tasks(self):
-        """Define default tasks for the maintenance crew"""
-        return [
-            Task(
-                description="""Analyze maintenance history and suggest 
-                optimal maintenance schedule""",
-                agent=self.create_agents()[1]  # Analyst
+        # Create function tools
+        maintenance_tools = [
+            FunctionTool.from_defaults(
+                fn=self.tools.schedule_maintenance,
+                name="schedule_maintenance",
+                description="Schedule and optimize maintenance tasks based on resources and constraints"
             ),
-            Task(
-                description="""Create maintenance schedule based on 
-                analysis and available resources""",
-                agent=self.create_agents()[0]  # Planner
+            FunctionTool.from_defaults(
+                fn=self.tools.analyze_maintenance_patterns,
+                name="analyze_maintenance_patterns",
+                description="Analyze historical maintenance data to identify patterns and trends"
             ),
-            Task(
-                description="""Provide relevant maintenance procedures 
-                and documentation""",
-                agent=self.create_agents()[2]  # Knowledge Base
+            FunctionTool.from_defaults(
+                fn=self.tools.get_asset_history,
+                name="get_asset_history",
+                description="Retrieve maintenance history for a specific asset"
+            ),
+            FunctionTool.from_defaults(
+                fn=self.index.query,
+                name="query_knowledge_base",
+                description="Query the maintenance knowledge base for procedures and documentation"
             )
         ]
+
+        # Create agent with tools and knowledge base
+        agent = OpenAIAgent.from_tools(
+            tools=maintenance_tools,
+            system_prompt="""You are an expert maintenance analyst and planner that helps optimize 
+            fleet maintenance operations. You can schedule maintenance tasks, analyze maintenance patterns,
+            access asset histories, and provide maintenance documentation."""
+        )
+        
+        return agent
+    
+    def query(self, query_text: str):
+        """Query the agent with a natural language request"""
+        agent = self.create_agent()
+        response = agent.chat(query_text)
+        return str(response)

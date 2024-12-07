@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from ..models.missions import Mission, MISSION_STATUS_CHOICES, MISSION_PRIORITY_CHOICES
 from ..models.schedules import MissionSchedule
-from ..optimizer import MissionOptimizer
-from ..route_optimizer import RoutePathOptimizer
+from ..scheduler import MissionOptimizer
+from ..scheduler import RoutePathOptimizer
 
 class SchedulingAIService:
     """Service for handling AI-powered scheduling operations with natural language understanding"""

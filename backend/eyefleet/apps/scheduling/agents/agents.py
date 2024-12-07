@@ -1,6 +1,6 @@
 from crewai import Agent, Task, Crew
 from .tools import SchedulingTools
-from .index import SchedulingIndex
+from .knowledgebase import SchedulingIndex
 
 class SchedulingAgents:
     """Manages AI agents for scheduling operations"""

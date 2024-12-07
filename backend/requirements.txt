@@ -28,3 +28,4 @@ crewai
 googlemaps
 llama-index-agent-openai
 llama-index-llms-openai
+openai

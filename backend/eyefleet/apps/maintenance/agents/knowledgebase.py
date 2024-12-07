@@ -1,9 +1,9 @@
-from llama_index import VectorStoreIndex, Document
-from llama_index.node_parser import SimpleNodeParser
+from llama_index.core import VectorStoreIndex, Document
+from llama_index.core.node_parser import SimpleNodeParser
 from typing import List
-from ..models.maintenance import Maintenance
-from ..models.assets import Asset
-from ..models.inspections import Inspection
+from eyefleet.apps.maintenance.models.maintenance import Maintenance
+from eyefleet.apps.maintenance.models.assets import Asset
+from eyefleet.apps.maintenance.models.inspections import Inspection
 
 class MaintenanceIndex:
     """Manages the LlamaIndex document store for maintenance data"""

@@ -9,7 +9,7 @@ from eyefleet.apps.maintenance.models.inspections import (
 )
 from eyefleet.apps.maintenance.models.assets import Asset
 from eyefleet.apps.maintenance.models.parts import (
-    AssetPartType, AssetPartManufacturer, AssetPartSupplier, AssetPart
+    AssetPartSupplier, AssetPart
 )
 from eyefleet.apps.maintenance.serializers import (
     MaintenanceTypeSerializer, MaintenanceStatusSerializer,
@@ -18,14 +18,17 @@ from eyefleet.apps.maintenance.serializers import (
     InspectionStatusSerializer, LocationSerializer,
     InspectionFieldSerializer, InspectionFieldResponseSerializer,
     InspectionResponseSerializer, InspectionSerializer,
-    AssetSerializer, AssetPartTypeSerializer,
-    AssetPartManufacturerSerializer, AssetPartSupplierSerializer,
+    AssetSerializer, AssetPartSupplierSerializer,
     AssetPartSerializer
 )
 
-from rest_framework.views import APIView
+from eyefleet.apps.maintenance.agents.server import MaintenanceAIService
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
+
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework import status
 # from agents.server import MaintenanceAIService
 
 # Maintenance related viewsets
@@ -83,15 +86,6 @@ class AssetViewSet(viewsets.ModelViewSet):
     queryset = Asset.objects.all()
     serializer_class = AssetSerializer
 
-# Parts related viewsets
-class AssetPartTypeViewSet(viewsets.ModelViewSet):
-    queryset = AssetPartType.objects.all()
-    serializer_class = AssetPartTypeSerializer
-
-class AssetPartManufacturerViewSet(viewsets.ModelViewSet):
-    queryset = AssetPartManufacturer.objects.all()
-    serializer_class = AssetPartManufacturerSerializer
-
 class AssetPartSupplierViewSet(viewsets.ModelViewSet):
     queryset = AssetPartSupplier.objects.all()
     serializer_class = AssetPartSupplierSerializer
@@ -100,48 +94,16 @@ class AssetPartViewSet(viewsets.ModelViewSet):
     queryset = AssetPart.objects.all()
     serializer_class = AssetPartSerializer
 
+class AgentViewSet(viewsets.ViewSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ai_service = MaintenanceAIService()
 
-# class MaintenanceAIChatView(APIView):
-#     """REST API endpoint for chatting with the maintenance AI"""
-    
-#     def __init__(self):
-#         super().__init__()
-#         self.ai_service = MaintenanceAIService()
-    
-#     def post(self, request):
-#         """
-#         Handle chat messages via REST
-        
-#         Expected request body:
-#         {
-#             "message": "string"
-#         }
-#         """
-#         message = request.data.get('message')
-        
-#         if not message:
-#             return Response(
-#                 {
-#                     "error": "message is required",
-#                     "status": "error"
-#                 },
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-        
-#         try:
-#             result = self.ai_service.chat(message)
-#             return Response(
-#                 {
-#                     "status": "success",
-#                     **result
-#                 },
-#                 status=status.HTTP_200_OK
-#             )
-#         except Exception as e:
-#             return Response(
-#                 {
-#                     "error": str(e),
-#                     "status": "error"
-#                 },
-#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
-#             )
+    @action(detail=False, methods=['post'])
+    def chat(self, request):
+        message = request.data.get('message')
+        if not message:
+            return Response({'error': 'Message is required'}, status=400)
+            
+        response = self.ai_service.chat(message)
+        return Response(response)

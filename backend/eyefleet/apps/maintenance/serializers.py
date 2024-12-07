@@ -9,7 +9,10 @@ from eyefleet.apps.maintenance.models.inspections import (
 )
 from eyefleet.apps.maintenance.models.assets import Asset
 from eyefleet.apps.maintenance.models.parts import (
-    AssetPartType, AssetPartManufacturer, AssetPartSupplier, AssetPart
+    AssetPartSupplier, AssetPart
+)
+from eyefleet.apps.maintenance.models.scheduling import (
+    MaintenanceWindow, MechanicSkill, Mechanic, MaintenanceBay, MaintenanceSchedule
 )
 
 # Maintenance related serializers
@@ -85,17 +88,6 @@ class AssetSerializer(serializers.ModelSerializer):
         model = Asset
         fields = '__all__'
 
-# Parts related serializers
-class AssetPartTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AssetPartType
-        fields = '__all__'
-
-class AssetPartManufacturerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AssetPartManufacturer
-        fields = '__all__'
-
 class AssetPartSupplierSerializer(serializers.ModelSerializer):
     class Meta:
         model = AssetPartSupplier
@@ -106,34 +98,32 @@ class AssetPartSerializer(serializers.ModelSerializer):
         model = AssetPart
         fields = '__all__'
 
-# Add to existing serializers.py
+class MaintenanceWindowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MaintenanceWindow
+        fields = '__all__'
 
-# class MaintenanceWindowSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = MaintenanceWindow
-#         fields = '__all__'
+class MechanicSkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MechanicSkill
+        fields = '__all__'
 
-# class MechanicSkillSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = MechanicSkill
-#         fields = '__all__'
-
-# class MechanicSerializer(serializers.ModelSerializer):
-#     skills = MechanicSkillSerializer(many=True, read_only=True)
+class MechanicSerializer(serializers.ModelSerializer):
+    skills = MechanicSkillSerializer(many=True, read_only=True)
     
-#     class Meta:
-#         model = Mechanic
-#         fields = '__all__'
+    class Meta:
+        model = Mechanic
+        fields = '__all__'
 
-# class MaintenanceBaySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = MaintenanceBay
-#         fields = '__all__'
+class MaintenanceBaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MaintenanceBay
+        fields = '__all__'
 
-# class MaintenanceScheduleSerializer(serializers.ModelSerializer):
-#     mechanic = MechanicSerializer(read_only=True)
-#     bay = MaintenanceBaySerializer(read_only=True)
+class MaintenanceScheduleSerializer(serializers.ModelSerializer):
+    mechanic = MechanicSerializer(read_only=True)
+    bay = MaintenanceBaySerializer(read_only=True)
     
-#     class Meta:
-#         model = MaintenanceSchedule
-#         fields = '__all__'
+    class Meta:
+        model = MaintenanceSchedule
+        fields = '__all__'

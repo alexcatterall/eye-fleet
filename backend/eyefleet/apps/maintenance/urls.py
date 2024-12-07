@@ -5,8 +5,7 @@ from .viewsets import (
     MaintenanceRequestViewSet, MaintenanceViewSet, InspectionTypeViewSet,
     InspectionStatusViewSet, LocationViewSet, InspectionFieldViewSet,
     InspectionFieldResponseViewSet, InspectionResponseViewSet, InspectionViewSet,
-    AssetViewSet, AssetPartTypeViewSet, AssetPartManufacturerViewSet,
-    AssetPartSupplierViewSet, AssetPartViewSet
+    AssetViewSet, AssetPartSupplierViewSet, AssetPartViewSet
 )
 
 router = DefaultRouter()
@@ -31,8 +30,6 @@ router.register(r'inspections', InspectionViewSet)
 router.register(r'assets', AssetViewSet)
 
 # Parts URLs
-router.register(r'asset-part-types', AssetPartTypeViewSet)
-router.register(r'asset-part-manufacturers', AssetPartManufacturerViewSet)
 router.register(r'asset-part-suppliers', AssetPartSupplierViewSet)
 router.register(r'asset-parts', AssetPartViewSet)
 

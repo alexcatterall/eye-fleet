@@ -37,7 +37,7 @@ MISSION_ASSIGNED_EMPLOYEE_ROLE_CHOICES = [
 # DEFINE ASSOCIATION MODELS
 class MissionAssignedEmployee(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    mission = models.ForeignKey('Mission', on_delete=models.CASCADE)
+    mission = models.ForeignKey('Mission', on_delete=models.CASCADE, related_name='assigned_employees')
     employee = models.CharField(max_length=100)
     role = models.CharField(max_length=50, choices=MISSION_ASSIGNED_EMPLOYEE_ROLE_CHOICES)
 
@@ -71,58 +71,3 @@ class Mission(models.Model):
         indexes = [
             models.Index(fields=['mission_number']),
         ]
-
-    def is_delayed(self) -> bool:
-        """Check if the mission is delayed"""
-        return self.status == 'delayed' or self.delay is not None
-
-    def calculate_remaining_time(self) -> float:
-        """Calculate remaining time in hours"""
-        if self.status == 'completed':
-            return 0
-        
-        remaining = (self.estimated_arrival - timezone.now()).total_seconds() / 3600
-        return max(0, remaining)
-
-    def update_progress(self, new_progress: int):
-        """Update mission progress"""
-        if 0 <= new_progress <= 100:
-            self.progress = new_progress
-            if new_progress == 100:
-                self.status = 'completed'
-            self.save()
-
-    def add_delay(self, minutes: int):
-        """Add delay to the mission"""
-        self.delay = f"{minutes} mins"
-        self.status = 'delayed'
-        # Update estimated arrival
-        self.estimated_arrival = self.estimated_arrival + timezone.timedelta(minutes=minutes)
-        self.save()
-
-    def add_stop_point(self, stop_id: str):
-        """Add a stop point to the mission"""
-        if not self.stop_points:
-            self.stop_points = []
-        if stop_id not in self.stop_points:
-            self.stop_points.append(stop_id)
-            self.save()
-
-    def remove_stop_point(self, stop_id: str):
-        """Remove a stop point from the mission"""
-        if stop_id in self.stop_points:
-            self.stop_points.remove(stop_id)
-            self.save()
-
-    def add_alert(self, alert: str):
-        """Add an alert to the mission"""
-        if not self.alerts:
-            self.alerts = []
-        self.alerts.append(alert)
-        self.save()
-
-    def clear_alerts(self):
-        """Clear all alerts for the mission"""
-        self.alerts = []
-        self.save()
-

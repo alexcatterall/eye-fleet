@@ -1,17 +1,23 @@
 from django.db import models
 
 
-class AssetPartType(models.Model):
-    pass
+PART_TYPE_CHOICES = [
+    ('engine', 'Engine'),
+    ('transmission', 'Transmission'),
+    ('brakes', 'Brakes'), 
+    ('suspension', 'Suspension'),
+    ('electrical', 'Electrical'),
+    ('body', 'Body')
+]
 
-    class Meta:
-        db_table = "asset_part_type"
-
-class AssetPartManufacturer(models.Model):
-    pass
-
-    class Meta:
-        db_table = "asset_part_manufacturer"
+MANUFACTURER_CHOICES = [
+    ('oem', 'OEM'),
+    ('bosch', 'Bosch'),
+    ('denso', 'Denso'),
+    ('delphi', 'Delphi'), 
+    ('valeo', 'Valeo'),
+    ('continental', 'Continental')
+]
 
 class AssetPartSupplier(models.Model):
     contact_name = models.CharField(max_length=100)
@@ -28,6 +34,9 @@ class AssetPartSupplier(models.Model):
 class AssetPart(models.Model):
     part_number = models.CharField(max_length=50)
     after_market = models.BooleanField(default=False)
+    
+    part_type = models.CharField(max_length=20, choices=PART_TYPE_CHOICES)
+    manufacturer = models.CharField(max_length=20, choices=MANUFACTURER_CHOICES)
 
     purchased_at = models.DateField()
     delivered_at = models.DateField()

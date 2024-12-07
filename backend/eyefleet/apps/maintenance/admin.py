@@ -9,7 +9,6 @@ from .models.maintenance import (
     MaintenanceRequest, Maintenance
 )
 from .models.parts import (
-    AssetPartType, AssetPartManufacturer,
     AssetPartSupplier, AssetPart
 )
 
@@ -30,7 +29,5 @@ admin.site.register(MaintenancePriority)
 admin.site.register(MaintenanceRequest)
 admin.site.register(Maintenance)
 
-admin.site.register(AssetPartType)
-admin.site.register(AssetPartManufacturer)
 admin.site.register(AssetPartSupplier)
 admin.site.register(AssetPart)

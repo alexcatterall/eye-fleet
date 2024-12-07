@@ -1,5 +1,3 @@
-# Import necessary libraries
-# cp_model is a constraint programming solver from Google's OR-Tools
 from ortools.sat.python import cp_model
 
 # Import typing hints to help with code readability and error checking
@@ -13,9 +11,18 @@ from django.utils import timezone
 
 # Import our custom models that represent database tables
 from .models.missions import Mission
-from .models.schedules import MissionSchedule
+from .models.schedules import MissionSchedule, Trip
 from .models.cargo import Cargo
 from eyefleet.apps.maintenance.models.assets import Asset
+# Import libraries for route optimization
+from ortools.constraint_solver import routing_enums_pb2
+from ortools.constraint_solver import pywrapcp
+from typing import List, Dict, Tuple
+import numpy as np
+from datetime import datetime, timedelta
+from dataclasses import dataclass
+import googlemaps  # For calculating real driving distances/times
+from django.conf import settings
 
 # Main class for optimizing mission schedules
 class MissionOptimizer:
@@ -198,16 +205,6 @@ class MissionOptimizer:
             'schedules': schedules
         }
     
-
-# Import libraries for route optimization
-from ortools.constraint_solver import routing_enums_pb2
-from ortools.constraint_solver import pywrapcp
-from typing import List, Dict, Tuple
-import numpy as np
-from datetime import datetime, timedelta
-from dataclasses import dataclass
-import googlemaps  # For calculating real driving distances/times
-from django.conf import settings
 
 # Define a class to represent each stop on a route
 @dataclass
@@ -421,20 +418,6 @@ class RoutePathOptimizer:
             'route': route
         }
 
-    def optimize_multiple_routes(
-        self,
-        depot_location: Dict[str, float],
-        all_stops: List[Stop],
-        vehicle_capacities: List[float],
-        max_route_duration: int = 480,
-        start_times: List[datetime] = None
-    ) -> List[Dict]:
-        """
-        Future method to handle multiple vehicles/routes
-        (Not implemented yet)
-        """
-        pass
-
 
 # Class that combines mission optimization and route optimization
 class MissionScheduler:
@@ -442,6 +425,45 @@ class MissionScheduler:
         # Create optimizers when initialized
         self.optimizer = MissionOptimizer()
         self.route_optimizer = RoutePathOptimizer()
+
+    def process_recurring_schedules(self):
+        """
+        Process recurring mission schedules and create trips
+        """
+        # Get current time
+        now = timezone.now()
+        
+        # Get all active schedules that need processing
+        schedules = MissionSchedule.objects.filter(
+            status='active',
+            next_occurrence__lte=now
+        )
+        
+        for schedule in schedules:
+            # Create a new trip from this schedule
+            trip = Trip.objects.create(
+                reference_mission=schedule.reference_mission,
+                reference_schedule=schedule,
+                start_time=datetime.combine(now.date(), schedule.start_time),
+                end_time=datetime.combine(now.date(), schedule.end_time),
+                source=schedule.stop_points[0]['location'],
+                destination=schedule.stop_points[-1]['location'],
+                driver=schedule.vehicle.driver if hasattr(schedule.vehicle, 'driver') else '',
+                vehicle=schedule.vehicle,
+                staff=schedule.reference_mission.assigned_employees.all(),
+                passengers=schedule.reference_mission.assigned_employees.all(),
+                status='scheduled'
+            )
+            
+            # Update schedule's next occurrence based on frequency
+            if schedule.recurrence == 'daily':
+                schedule.next_occurrence = now + timedelta(days=1)
+            elif schedule.recurrence == 'weekly':
+                schedule.next_occurrence = now + timedelta(weeks=1)
+            elif schedule.recurrence == 'monthly':
+                schedule.next_occurrence = now + timedelta(days=30)
+            
+            schedule.save()
 
     def optimize_mission_route(
         self,
