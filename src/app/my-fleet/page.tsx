@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import BackButton from '@/components/BackButton';
 import Logo from '@/components/Logo';
 import { useRouter } from 'next/navigation';
@@ -103,26 +102,6 @@ export default function MyFleet() {
             {vehicles.filter(v => v.status === 'maintenance').length}
           </p>
         </div>
-      </div>
-
-      {/* Map View */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Vehicle Locations</h2>
-        <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
-          <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={center}
-            zoom={10}
-          >
-            {vehicles.map((vehicle) => (
-              <Marker
-                key={vehicle.registration_number}
-                position={{ lat: -33.865143, lng: 151.209900 }}
-                title={`${vehicle.manufacturer} ${vehicle.model}`}
-              />
-            ))}
-          </GoogleMap>
-        </LoadScript>
       </div>
 
       {/* Vehicle List */}
