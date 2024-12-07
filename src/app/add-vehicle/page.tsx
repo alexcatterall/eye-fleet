@@ -5,49 +5,53 @@ import { useRouter } from 'next/navigation';
 import BackButton from '@/components/BackButton';
 import Logo from '@/components/Logo';
 
-export default function AddVehicle() {
+export default function AddAsset() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    make: '',
+    registration_number: '',
+    manufacturer: '',
     model: '',
-    year: '',
-    license_plate: '',
-    vin: '',
+    type: null,
+    driver: '',
+    status: null,
+    location: null,
+    fuel_level: null,
+    on_trip: false,
     mileage: '',
-    fuel_type: 'gasoline',
-    status: 'active',
-    location_lat: '-33.865143',
-    location_lng: '151.209900'
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    let data = JSON.stringify(formData);
+    console.log("form data", data);
     try {
-      const response = await fetch('http://localhost:8000/api/vehicles/', {
+      const response = await fetch('http://localhost:8000/api/maintenance/assets/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: data,
       });
-
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        console.log("error data", errorData);
+        throw new Error(`Error: ${errorData.detail || response.statusText}`);
       }
 
-      alert('Vehicle added successfully!');
-      router.push('/my-fleet');
+      alert('Asset added successfully!');
+      router.push('/assets'); // Redirect to the assets page (or wherever you want)
     } catch (error) {
-      console.error('Error adding vehicle:', error);
-      alert('Failed to add vehicle. Please try again.');
+      console.error('Error adding asset:', error);
+      alert(`Failed to add asset: ${error.message}`);
     }
   };
 
@@ -57,21 +61,38 @@ export default function AddVehicle() {
         <Logo />
         <BackButton />
       </div>
-      <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Add New Vehicle</h1>
-      
+      <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Add New Asset</h1>
+
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Make */}
+            {/* Registration Number */}
             <div>
-              <label htmlFor="make" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Make
+              <label htmlFor="registration_number" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Registration Number
               </label>
               <input
                 type="text"
-                id="make"
-                name="make"
-                value={formData.make}
+                id="registration_number"
+                name="registration_number"
+                value={formData.registration_number}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="e.g., ABC123"
+              />
+            </div>
+
+            {/* Manufacturer */}
+            <div>
+              <label htmlFor="manufacturer" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Manufacturer
+              </label>
+              <input
+                type="text"
+                id="manufacturer"
+                name="manufacturer"
+                value={formData.manufacturer}
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -96,63 +117,115 @@ export default function AddVehicle() {
               />
             </div>
 
-            {/* Year */}
+            {/* Type */}
             <div>
-              <label htmlFor="year" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Year
+              <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Type
+              </label>
+              <select
+                id="type"
+                name="type"
+                value={formData.type || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              >
+                <option value="">Select Type</option>
+                <option value="car">Car</option>
+                <option value="truck">Truck</option>
+                <option value="bus">Bus</option>
+                <option value="motorcycle">Motorcycle</option>
+              </select>
+            </div>
+
+            {/* Driver */}
+            <div>
+              <label htmlFor="driver" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Driver
+              </label>
+              <input
+                type="text"
+                id="driver"
+                name="driver"
+                value={formData.driver}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="e.g., John Doe"
+              />
+            </div>
+
+            {/* Status */}
+            <div>
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Status
+              </label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              >
+                <option value="">Select Status</option>
+                <option value="Available">Available</option>
+                <option value="inactive">Inactive</option>
+                <option value="under_maintenance">Under Maintenance</option>
+              </select>
+            </div>
+
+            {/* Location */}
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Location
+              </label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                value={formData.location || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="e.g., Warehouse 1"
+              />
+            </div>
+
+            {/* Fuel Level */}
+            <div>
+              <label htmlFor="fuel_level" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Fuel Level
               </label>
               <input
                 type="number"
-                id="year"
-                name="year"
-                value={formData.year}
+                id="fuel_level"
+                name="fuel_level"
+                value={formData.fuel_level || ''}
                 onChange={handleChange}
-                required
-                min="1900"
-                max={new Date().getFullYear() + 1}
+                min="0"
+                max="100"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                placeholder="e.g., 2023"
+                placeholder="e.g., 50"
               />
             </div>
 
-            {/* License Plate */}
+            {/* On Trip */}
             <div>
-              <label htmlFor="license_plate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                License Plate
+              <label htmlFor="on_trip" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                On Trip
               </label>
               <input
-                type="text"
-                id="license_plate"
-                name="license_plate"
-                value={formData.license_plate}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                placeholder="e.g., ABC123"
-              />
-            </div>
-
-            {/* VIN */}
-            <div>
-              <label htmlFor="vin" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                VIN
-              </label>
-              <input
-                type="text"
-                id="vin"
-                name="vin"
-                value={formData.vin}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                placeholder="Vehicle Identification Number"
+                type="checkbox"
+                id="on_trip"
+                name="on_trip"
+                checked={formData.on_trip}
+                onChange={e => setFormData(prev => ({ ...prev, on_trip: e.target.checked }))}
+                className="h-5 w-5"
               />
             </div>
 
             {/* Mileage */}
             <div>
               <label htmlFor="mileage" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Current Mileage
+                Mileage
               </label>
               <input
                 type="number"
@@ -166,45 +239,6 @@ export default function AddVehicle() {
                 placeholder="e.g., 50000"
               />
             </div>
-
-            {/* Fuel Type */}
-            <div>
-              <label htmlFor="fuel_type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Fuel Type
-              </label>
-              <select
-                id="fuel_type"
-                name="fuel_type"
-                value={formData.fuel_type}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              >
-                <option value="gasoline">Gasoline</option>
-                <option value="diesel">Diesel</option>
-                <option value="electric">Electric</option>
-                <option value="hybrid">Hybrid</option>
-              </select>
-            </div>
-
-            {/* Status */}
-            <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              >
-                <option value="active">Active</option>
-                <option value="maintenance">In Maintenance</option>
-                <option value="retired">Retired</option>
-              </select>
-            </div>
           </div>
 
           {/* Submit Button */}
@@ -213,7 +247,7 @@ export default function AddVehicle() {
               type="submit"
               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
             >
-              Add Vehicle
+              Add Asset
             </button>
           </div>
         </div>

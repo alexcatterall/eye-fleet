@@ -32,13 +32,14 @@ export default function MyFleet() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Fetch vehicles using the correct API endpoint
   useEffect(() => {
     fetchVehicles();
   }, []);
 
   const fetchVehicles = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/vehicles/');
+      const response = await fetch('/api/vehicles/'); // Correct API endpoint for listing all vehicles
       if (!response.ok) {
         throw new Error('Failed to fetch vehicles');
       }
@@ -52,6 +53,7 @@ export default function MyFleet() {
     }
   };
 
+  // Loading spinner
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -60,6 +62,7 @@ export default function MyFleet() {
     );
   }
 
+  // Error message
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
