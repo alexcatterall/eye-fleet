@@ -1,53 +1,31 @@
 from django.db import models
-from django.core.validators import MinValueValidator
-from telemex.apps.routes.models import Route, Cargo
-from telemex.apps.vehicles.models import Vehicle
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
+import uuid
+from eyefleet.apps.scheduling.models.missions import Mission, TRIP_STATUS_CHOICES
+from eyefleet.apps.scheduling.models.cargo import Cargo
+from eyefleet.apps.maintenance.models.assets import Asset
 
-# DEFINE OPTIONAL MODELS
-class RouteScheduleStatus(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'route_schedule_statuses'
-
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['scheduled', 'in_progress', 'completed', 'cancelled']
-        return [cls(id=status) for status in defaults]
-
-class RouteScheduleShift(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'schedule_shifts'
-
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['morning', 'afternoon', 'evening', 'night']
-        return [cls(id=shift) for shift in defaults]
-
-class RouteScheduleRecurrence(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'schedule_recurrences'
-
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['one_time', 'daily', 'weekly', 'monthly', 'yearly']
-        return [cls(id=recurrence) for recurrence in defaults]
-
-# DEFINE CORE MODELS
-class RouteSchedule(models.Model):
+class MissionSchedule(models.Model):
     id = models.CharField(max_length=20, primary_key=True)
 
-    shift = models.ForeignKey(RouteScheduleShift, on_delete=models.PROTECT)
-    reference_route = models.ForeignKey(Route, on_delete=models.PROTECT)
+    shift = models.CharField(max_length=50, choices=[
+        ('morning', 'Morning'),
+        ('afternoon', 'Afternoon'), 
+        ('evening', 'Evening'),
+        ('night', 'Night')
+    ])
+    reference_mission = models.ForeignKey(Mission, on_delete=models.PROTECT)
 
     driver = models.CharField(max_length=20, blank=True, null=True)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT, null=True, blank=True)
+    vehicle = models.ForeignKey(Asset, on_delete=models.PROTECT, null=True, blank=True)
 
-    status = models.ForeignKey(RouteScheduleStatus, on_delete=models.PROTECT)
+    status = models.CharField(max_length=50, choices=[
+        ('scheduled', 'Scheduled'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled')
+    ])
 
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -56,7 +34,13 @@ class RouteSchedule(models.Model):
 
     estimated_duration = models.CharField(max_length=50)
 
-    recurrence = models.ForeignKey(RouteScheduleRecurrence, on_delete=models.PROTECT, null=True, blank=True)
+    recurrence = models.CharField(max_length=50, choices=[
+        ('one_time', 'One Time'),
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly'),
+        ('yearly', 'Yearly')
+    ], null=True, blank=True)
 
     notes = models.TextField(null=True, blank=True)
     actual_duration = models.CharField(max_length=50, null=True, blank=True)
@@ -74,3 +58,38 @@ class RouteSchedule(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Trip(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    reference_mission = models.ForeignKey(Mission, on_delete=models.PROTECT, null=True, blank=True)
+    reference_schedule = models.ForeignKey(MissionSchedule, on_delete=models.PROTECT, null=True, blank=True)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    source = models.CharField(max_length=255)
+    destination = models.CharField(max_length=255)
+    driver = models.CharField(max_length=100)
+    vehicle = models.ForeignKey(Asset, on_delete=models.PROTECT, null=True, blank=True)
+    staff = models.JSONField(default=list)
+    passengers = models.JSONField(default=list)
+    on_time = models.BooleanField(default=True)
+    progress = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], default=0)
+    status = models.CharField(max_length=50, choices=TRIP_STATUS_CHOICES, default='ongoing')
+
+    class Meta:
+        db_table = 'mission_logs'
+
+    def __str__(self):
+        return f"ML:{self.reference_mission_id}-{self.start_time}-{self.end_time}-{self.source}-{self.destination}-{self.driver}-{self.status}"
+
+    def get_duration(self) -> timezone.timedelta:
+        """Get mission duration"""
+        return self.end_time - self.start_time
+
+    def is_late(self) -> bool:
+        """Check if mission was late"""
+        return not self.on_time
+
+    def total_people(self) -> int:
+        """Get total number of people on mission"""
+        return len(self.staff) + len(self.passengers) + 1  # +1 for driver

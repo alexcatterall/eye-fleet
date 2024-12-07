@@ -1,13 +1,11 @@
 from django.core.management.base import BaseCommand
-from telemex.apps.vehicles.models import Vehicle, VehicleStatus, VehicleType
-from telemex.apps.vehicles.factories import VehicleFactory
-from telemex.apps.livetracking.models import Device
-from telemex.apps.livetracking.factories import DeviceFactory
-from telemex.apps.routes.models import Trip
-from telemex.apps.routes.factories import TripFactory
+from eyefleet.apps.maintenance.models.assets import Asset
+from eyefleet.apps.scheduling.models.missions import Mission, MISSION_STATUS_CHOICES, TRIP_STATUS_CHOICES
+from eyefleet.apps.livetracking.models import Device
 import random
+import logging
 
-from telemex.utils.logger import logger
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     """Django management command to setup live tracking experiment data"""
@@ -18,22 +16,36 @@ class Command(BaseCommand):
         logger.info("Setting up experiment data...")
 
         try:
-            # Create vehicles
-            vehicles = VehicleFactory.create_batch(10)
-            logger.info(f"Created {len(vehicles)} vehicles")
+            # Create assets (vehicles)
+            assets = []
+            for i in range(10):
+                asset = Asset.objects.create(
+                    asset_id=f"VEH{i+1:03d}",
+                    asset_type="vehicle",
+                    status="active"
+                )
+                assets.append(asset)
+            logger.info(f"Created {len(assets)} assets")
 
-            # Create devices for each vehicle
-            for vehicle in vehicles:
-                DeviceFactory(assigned_vehicle=vehicle)
+            # Create devices for each asset
+            for asset in assets:
+                Device.objects.create(
+                    device_id=f"DEV{asset.asset_id}",
+                    asset=asset,
+                    status="active"
+                )
             
-            logger.info(f"Created {len(vehicles)} devices")
+            logger.info(f"Created {len(assets)} devices")
             
-            # Create trips for each vehicle
-            for vehicle in vehicles:
+            # Create missions for each asset
+            for asset in assets:
                 for _ in range(random.randint(10, 50)):
-                    TripFactory(vehicle=vehicle)
+                    Mission.objects.create(
+                        mission_number=f"MSN{random.randint(1000,9999)}",
+                        status=random.choice([s[0] for s in MISSION_STATUS_CHOICES])
+                    )
 
-            logger.info(f"Created trips for each vehicle")
+            logger.info(f"Created missions for each asset")
 
             logger.info("Experiment data setup completed")
         except Exception as e:

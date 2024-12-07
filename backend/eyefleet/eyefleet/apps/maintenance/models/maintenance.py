@@ -1,9 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator
-from telemex.apps.vehicles.models.inspections import Location, Inspection
-from telemex.apps.vehicles.models.vehicles import Vehicle, VehicleType
-from telemex.apps.vehicles.models.parts import VehiclePart
+from eyefleet.apps.maintenance.models.inspections import Location, Inspection
+from eyefleet.apps.maintenance.models.assets import Asset, ASSET_TYPE_CHOICES
 
 # DEFINE OPTIONAL MODELS
 class MaintenanceType(models.Model):
@@ -46,12 +45,17 @@ class MaintenanceRequest(models.Model):
 class Maintenance(models.Model):
     id = models.CharField(max_length=20, primary_key=True)
     
-    # some maintenance jobs can be externally triggered, i.e the vehicles could belong to other organizations or individuals
+    # some maintenance jobs can be externally triggered, i.e the assets could belong to other organizations or individuals
     reg_number = models.CharField(max_length=20)
-    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.PROTECT, null=True, blank=True)
+    asset_type = models.CharField(
+        max_length=20,
+        choices=ASSET_TYPE_CHOICES,
+        null=True,
+        blank=True
+    )
     
     # some maintenance jobs can be triggered by an inspection
-    ref_vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT, null=True, blank=True)
+    ref_asset = models.ForeignKey(Asset, on_delete=models.PROTECT, null=True, blank=True)
     ref_inspection = models.ForeignKey(Inspection, on_delete=models.PROTECT, null=True, blank=True)
     
     # maintenance type and status
@@ -75,7 +79,7 @@ class Maintenance(models.Model):
     )
     mileage = models.PositiveIntegerField(validators=[MinValueValidator(0)])
     
-    parts = models.ManyToManyField(VehiclePart, blank=True)
+    parts = models.JSONField(default=list)
     notes = models.TextField(null=True, blank=True)
     
     # previous maintenance record, the maintenance records form a chain of events
@@ -94,78 +98,3 @@ class Maintenance(models.Model):
         indexes = [
             models.Index(fields=['reg_number']),
         ]
-
-    def is_completed(self) -> bool:
-        """Check if maintenance is completed"""
-        return self.status.id == "Completed"
-
-    def is_scheduled(self) -> bool:
-        """Check if maintenance is scheduled"""
-        return self.status.id == "Scheduled"
-
-    def is_cancelled(self) -> bool:
-        """Check if maintenance is cancelled"""
-        return self.status.id == "Cancelled"
-
-    def is_critical(self) -> bool:
-        """Check if maintenance is critical priority"""
-        return self.priority.id == "Critical"
-
-    def get_duration_hours(self) -> int:
-        """Get numeric duration in hours"""
-        return int(self.estimated_duration.split()[0])
-
-    def get_cost_value(self) -> float:
-        """Get numeric cost value"""
-        return float(self.estimated_cost)
-
-    def days_since_last_service(self) -> int:
-        """Calculate days since last service"""
-        return (timezone.now() - self.last_service).days
-
-    def days_until_scheduled(self) -> int:
-        """Calculate days until scheduled maintenance"""
-        delta = self.scheduled_date - timezone.now()
-        return max(0, delta.days)
-
-    def is_due_soon(self, days: int = 7) -> bool:
-        """Check if maintenance is due soon"""
-        return self.days_until_scheduled() <= days
-
-    def has_part(self, part: str) -> bool:
-        """Check if specific part is needed"""
-        return part in self.parts
-
-    def add_part(self, part: str):
-        """Add a part to maintenance record"""
-        if not self.parts:
-            self.parts = []
-        if part not in self.parts:
-            self.parts.append(part)
-            self.save()
-
-    def update_status(self, new_status: str):
-        """Update maintenance status"""
-        try:
-            status = MaintenanceStatus.objects.get(id=new_status)
-            self.status = status
-            self.save()
-        except MaintenanceStatus.DoesNotExist:
-            pass
-
-    def update_priority(self, new_priority: str):
-        """Update maintenance priority"""
-        try:
-            priority = MaintenancePriority.objects.get(id=new_priority)
-            self.priority = priority
-            self.save()
-        except MaintenancePriority.DoesNotExist:
-            pass
-
-    def add_attachment(self, filename: str):
-        """Add attachment to maintenance record"""
-        if not self.attachments:
-            self.attachments = []
-        if filename not in self.attachments:
-            self.attachments.append(filename)
-            self.save()

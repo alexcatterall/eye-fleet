@@ -3,48 +3,38 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator
 import uuid
 
-# DEFINE OPTION MODELS
-class CargoType(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
+# Define cargo type choices
+CARGO_TYPE_CHOICES = [
+    ('passenger', 'Passenger'),
+    ('parcel', 'Parcel'),
+    ('mixed', 'Mixed')
+]
 
-    class Meta:
-        db_table = 'cargo_types'
+# Define cargo status choices
+CARGO_STATUS_CHOICES = [
+    ('scheduled', 'Scheduled'),
+    ('recurring_scheduled', 'Recurring Scheduled'),
+    ('in_transit', 'In Transit'),
+    ('delivered', 'Delivered'),
+    ('cancelled', 'Cancelled'),
+    ('failed_delivery', 'Failed Delivery')
+]
 
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['passenger', 'parcel', 'mixed']
-        return [cls(id=cargo_type) for cargo_type in defaults]
+# Define cargo priority choices
+CARGO_PRIORITY_CHOICES = [
+    ('low', 'Low'),
+    ('medium', 'Medium'),
+    ('high', 'High'),
+    ('critical', 'Critical')
+]
 
-class CargoStatus(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'cargo_statuses'
-
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['scheduled', 'recurring_scheduled', 'in_transit', 'delivered', 'cancelled', 'failed_delivery']
-        return [cls(id=status) for status in defaults]
-
-class CargoPriority(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'cargo_priorities'
-    
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['low', 'medium', 'high', 'critical']
-        return [cls(id=priority) for priority in defaults]
-
-# DEFINE CORE MODELS
 class Cargo(models.Model):
     id = models.UUIDField(primary_key=True, 
                           default=uuid.uuid4, 
                           editable=False)
     
-    type = models.ForeignKey(CargoType, on_delete=models.PROTECT)
-    status = models.ForeignKey(CargoStatus, on_delete=models.PROTECT)
+    type = models.CharField(max_length=20, choices=CARGO_TYPE_CHOICES)
+    status = models.CharField(max_length=20, choices=CARGO_STATUS_CHOICES)
 
     weight = models.FloatField(validators=[MinValueValidator(0)], null=True, blank=True)
     volume = models.FloatField(validators=[MinValueValidator(0)], null=True, blank=True)
@@ -61,7 +51,7 @@ class Cargo(models.Model):
     has_return = models.BooleanField(default=False)
     special_instructions = models.JSONField(null=True, blank=True)
 
-    priority = models.ForeignKey(CargoPriority, on_delete=models.PROTECT)
+    priority = models.CharField(max_length=20, choices=CARGO_PRIORITY_CHOICES)
     sender = models.CharField(max_length=100, null=True, blank=True)
     receiver = models.CharField(max_length=100, null=True, blank=True)
     handler = models.CharField(max_length=100, null=True, blank=True)
@@ -76,18 +66,15 @@ class Cargo(models.Model):
     def is_delayed(self) -> bool:
         """Check if cargo delivery is delayed"""
         current_time = timezone.localtime().time()
-        if self.status.id != 'delivered':
+        if self.status != 'delivered':
             return current_time > self.expected_dropoff_t
         return False
 
     def update_status(self, new_status: str):
         """Update cargo status"""
-        try:
-            status = CargoStatus.objects.get(id=new_status)
-            self.status = status
+        if new_status in dict(CARGO_STATUS_CHOICES):
+            self.status = new_status
             self.save()
-        except CargoStatus.DoesNotExist:
-            pass
 
     def calculate_transit_time(self) -> float:
         """Calculate transit time in hours"""
@@ -107,7 +94,7 @@ class Cargo(models.Model):
 
     def is_active(self) -> bool:
         """Check if cargo is actively in transit"""
-        return self.status.id == 'in_transit'
+        return self.status == 'in_transit'
 
     def requires_special_handling(self) -> bool:
         """Check if cargo requires special handling"""
@@ -150,15 +137,15 @@ class Cargo(models.Model):
 
     def is_cancelled(self) -> bool:
         """Check if cargo is cancelled"""
-        return self.status.id == 'cancelled'
+        return self.status == 'cancelled'
 
     def is_delivered(self) -> bool:
         """Check if cargo is delivered"""
-        return self.status.id == 'delivered'
+        return self.status == 'delivered'
 
     def is_passenger_type(self) -> bool:
         """Check if cargo is passenger type"""
-        return self.type.id == 'passenger'
+        return self.type == 'passenger'
 
     def has_handler(self) -> bool:
         """Check if cargo has assigned handler"""

@@ -10,10 +10,4 @@ class LivetrackingConfig(AppConfig):
     """Configuration class for the livetracking Django app."""
     
     # Full Python path to the application
-    name = 'telemex.apps.livetracking'
-    
-    # Default primary key field type for models
-    default_auto_field = 'django.db.models.BigAutoField'
-
-    def ready(self):
-        import telemex.apps.livetracking.signals
+    name = 'eyefleet.apps.livetracking'

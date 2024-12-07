@@ -1,11 +1,10 @@
 import paho.mqtt.client as mqtt
 import json
-from telemex.apps.livetracking.tasks.mqtt import process_mqtt_message
-from telemex.utils.logger import logger
+from eyefleet.apps.livetracking.tasks.mqtt import process_mqtt_message
 
 class MQTTHandler:
     """
-    Handles MQTT connection and message processing for telemex application.
+    Handles MQTT connection and message processing for eyefleet application.
     Connects to MQTT broker and processes incoming telemetry messages.
     """
 
@@ -25,9 +24,9 @@ class MQTTHandler:
             flags: Response flags from broker
             rc: Connection result code
         """
-        logger.info(f"Connected with result code {rc}")
-        # Subscribe to telemex topic for receiving telemetry data
-        client.subscribe("telemex")
+        print(f"Connected with result code {rc}")
+        # Subscribe to eyefleet topic for receiving telemetry data
+        client.subscribe("eyefleet")
 
     def on_message(self, client: mqtt.Client, userdata, msg):
         """
@@ -38,14 +37,14 @@ class MQTTHandler:
             userdata: Private user data 
             msg: Received message object
         """
-        logger.info(f"Received message on topic: {msg.topic}")
-        if msg.topic == "telemex":
+        print(f"Received message on topic: {msg.topic}")
+        if msg.topic == "eyefleet":
             try:
                 data = json.loads(msg.payload.decode())
                 # Process message asynchronously using Celery
                 process_mqtt_message.delay(data, msg.topic)
             except json.JSONDecodeError as e:
-                logger.error(f"Failed to decode message payload: {e}")
+                print(f"Failed to decode message payload: {e}")
 
     def start(self):
         """
@@ -53,11 +52,11 @@ class MQTTHandler:
         Handles connection errors and cleanup.
         """
         try:
-            logger.info("Connecting to MQTT broker")
+            print("Connecting to MQTT broker")
             # Connect to local mosquitto broker
             self.client.connect("mosquitto", 1883, 60)
             self.client.loop_forever()
         except Exception as e:
-            logger.error(f"Error connecting to MQTT broker: {e}")
+            print(f"Error connecting to MQTT broker: {e}")
             self.client.disconnect()
             self.client.loop_stop()
