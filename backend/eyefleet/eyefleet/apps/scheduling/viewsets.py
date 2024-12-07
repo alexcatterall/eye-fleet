@@ -37,14 +37,12 @@ class MissionScheduleViewSet(viewsets.ModelViewSet):
     queryset = MissionSchedule.objects.all()
     serializer_class = MissionScheduleSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['mission']
     search_fields = ['id']
 
 class TripViewSet(viewsets.ModelViewSet):
     queryset = Trip.objects.all()
     serializer_class = TripSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['status', 'schedule']
     search_fields = ['id']
 
 class CargoViewSet(viewsets.ModelViewSet):
