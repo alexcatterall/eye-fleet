@@ -36,11 +36,11 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* Todo Card */}
-          <Link href="/todo" className="transform hover:scale-105 transition-transform duration-200">
+          {/* Fleet Vision Card */}
+          <Link href="/fleet-vision" className="transform hover:scale-105 transition-transform duration-200">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl">
-              <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">To-do</h2>
-              <p className="text-gray-600 dark:text-gray-300">Track and manage maintenance tasks</p>
+              <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Fleet Vision</h2>
+              <p className="text-gray-600 dark:text-gray-300">Interactive map view with real-time chat functionality</p>
             </div>
           </Link>
 
