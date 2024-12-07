@@ -40,7 +40,7 @@ eye-fleet/
    ```bash
    python3 manage.py runserver
    ```
-   The backend will be available at `http://localhost:8000`
+   The backend will be available at `http://localhost:8000/docs/`
 
 ### Frontend Setup (Next.js)
 
