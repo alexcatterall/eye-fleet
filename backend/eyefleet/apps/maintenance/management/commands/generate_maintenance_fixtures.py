@@ -28,24 +28,39 @@ class Command(BaseCommand):
         try:
             with transaction.atomic():
                 # Create lookup data first
+                self.stdout.write('Creating inspection types...')
                 self.create_inspection_types()
+                self.stdout.write('Creating inspection statuses...')
                 self.create_inspection_statuses()
+                self.stdout.write('Creating locations...')
                 self.create_locations()
+                self.stdout.write('Creating maintenance types...')
                 self.create_maintenance_types()
+                self.stdout.write('Creating maintenance statuses...')
                 self.create_maintenance_statuses() 
+                self.stdout.write('Creating maintenance priorities...')
                 self.create_maintenance_priorities()
+                self.stdout.write('Creating mechanic skills...')
                 self.create_mechanic_skills()
+                self.stdout.write('Creating maintenance windows...')
                 self.create_maintenance_windows()
                 
                 # Create main entities
+                self.stdout.write('Creating assets...')
                 self.create_assets(20)  # Create 20 assets
+                self.stdout.write('Creating mechanics...')
                 self.create_mechanics(10)  # Create 10 mechanics
+                self.stdout.write('Creating maintenance bays...')
                 self.create_maintenance_bays(5)  # Create 5 maintenance bays
+                self.stdout.write('Creating part suppliers...')
                 self.create_part_suppliers(5)  # Create 5 suppliers
+                self.stdout.write('Creating parts...')
                 self.create_parts(30)  # Create 30 parts
                 
                 # Create related records
+                self.stdout.write('Creating inspections...')
                 self.create_inspections(50)  # Create 50 inspections
+                self.stdout.write('Creating maintenance records...')
                 self.create_maintenance_records(40)  # Create 40 maintenance records
                 
             self.stdout.write(self.style.SUCCESS('Successfully generated fixtures'))
@@ -129,7 +144,7 @@ class Command(BaseCommand):
                 type=asset_type,
                 driver=fake.name(),
                 status=status,
-                location={'lat': fake.latitude(), 'lng': fake.longitude()},
+                location={'lat': str(fake.latitude()), 'lng': str(fake.longitude())},
                 fuel_level=random.randint(0, 100),
                 capacity_weight=random.uniform(1000, 5000),
                 capacity_volume=random.uniform(10, 50),

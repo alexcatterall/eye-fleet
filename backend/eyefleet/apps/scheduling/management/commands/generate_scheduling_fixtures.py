@@ -24,12 +24,18 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write('Creating test fixtures...')
-
+        
+        self.stdout.write('Creating test clients...')
         clients = self.create_test_clients(options['clients'])
+        self.stdout.write('Creating test pilots...')
         pilots = self.create_test_pilots(options['pilots'])
-        assets = self.create_test_assets(options['assets'])
+
+        assets = Asset.objects.all()
+        self.stdout.write('Creating test cargos...')
         cargos = self.create_test_cargos(options['cargos'])
+        self.stdout.write('Creating test missions...')
         missions = self.create_test_missions(options['missions'], pilots, assets, cargos)
+        self.stdout.write('Creating test schedules...')
         self.create_test_schedules(options['schedules'], missions, pilots, assets, cargos)
 
         self.stdout.write(self.style.SUCCESS('Successfully created test fixtures'))
@@ -60,7 +66,7 @@ class Command(BaseCommand):
         pilots = []
         for i in range(count):
             pilot = Pilot.objects.create(
-                id=f'P{i:04d}',
+                id=f'P{random.randint(1000, 9999):04d}',
                 first_name=f'Test',
                 last_name=f'Pilot {i}',
                 phone=f'+1555111{i:04d}',
@@ -75,19 +81,6 @@ class Command(BaseCommand):
             )
             pilots.append(pilot)
         return pilots
-
-    def create_test_assets(self, count):
-        self.stdout.write(f'Creating {count} test assets...')
-        assets = []
-        for i in range(count):
-            asset = Asset.objects.create(
-                id=f'V{i:04d}',
-                name=f'Vehicle {i}',
-                capacity_weight=random.uniform(1000, 5000),
-                status='available'
-            )
-            assets.append(asset)
-        return assets
 
     def create_test_cargos(self, count):
         self.stdout.write(f'Creating {count} test cargos...')
