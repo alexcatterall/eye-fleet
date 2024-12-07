@@ -1,0 +1,57 @@
+# Stage 1: Base
+FROM python:3.11-slim as base
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    POETRY_VERSION=1.6.1 \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_VIRTUALENVS_CREATE=false
+
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        libpq-dev \
+        gettext \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install poetry
+RUN pip install "poetry==$POETRY_VERSION"
+
+# Set work directory
+WORKDIR /app
+
+# Copy poetry files
+COPY pyproject.toml poetry.lock ./
+
+# Stage 2: Development
+FROM base as development
+
+# Install development dependencies
+RUN poetry install --no-interaction --no-ansi
+
+# Copy project files
+COPY . .
+
+# Run migrations and collect static files
+RUN python manage.py collectstatic --noinput
+
+# Start development server
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+# Stage 3: Production
+FROM base as production
+
+# Install production dependencies only
+RUN poetry install --no-interaction --no-ansi --no-dev
+
+# Copy project files
+COPY . .
+
+# Run migrations and collect static files
+RUN python manage.py collectstatic --noinput
+
+# Start production server with Daphne
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "eyefleet.asgi:application"]

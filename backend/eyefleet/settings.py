@@ -30,7 +30,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -163,3 +162,4 @@ ASGI_APPLICATION = 'eyefleet.asgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+GOOGLE_MAPS_API_KEY = 'your-api-key'

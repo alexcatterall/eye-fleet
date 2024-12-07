@@ -23,3 +23,6 @@ python-dotenv
 factory-boy
 Faker
 ortools
+llama-index
+crewai
+googlemaps
