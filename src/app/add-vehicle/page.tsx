@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import BackButton from '@/components/BackButton';
+import Logo from '@/components/Logo';
 
 export default function AddVehicle() {
   const router = useRouter();
@@ -51,6 +53,10 @@ export default function AddVehicle() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-8">
+        <Logo />
+        <BackButton />
+      </div>
       <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">Add New Vehicle</h1>
       
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">

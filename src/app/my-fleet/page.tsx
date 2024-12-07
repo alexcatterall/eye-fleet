@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import BackButton from '@/components/BackButton';
+import Logo from '@/components/Logo';
 
 interface Vehicle {
   id: number;
@@ -71,6 +73,10 @@ export default function MyFleet() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-8">
+        <Logo />
+        <BackButton />
+      </div>
       <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">My Fleet</h1>
 
       {/* Fleet Statistics */}
