@@ -105,3 +105,35 @@ class AssetPartSerializer(serializers.ModelSerializer):
     class Meta:
         model = AssetPart
         fields = '__all__'
+
+# Add to existing serializers.py
+
+class MaintenanceWindowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MaintenanceWindow
+        fields = '__all__'
+
+class MechanicSkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MechanicSkill
+        fields = '__all__'
+
+class MechanicSerializer(serializers.ModelSerializer):
+    skills = MechanicSkillSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Mechanic
+        fields = '__all__'
+
+class MaintenanceBaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MaintenanceBay
+        fields = '__all__'
+
+class MaintenanceScheduleSerializer(serializers.ModelSerializer):
+    mechanic = MechanicSerializer(read_only=True)
+    bay = MaintenanceBaySerializer(read_only=True)
+    
+    class Meta:
+        model = MaintenanceSchedule
+        fields = '__all__'

@@ -1,13 +1,9 @@
-# Django Project Setup with Channels and Redis
+pip install -r requirements.txt
 
-This guide will help you set up a Django project with Django Channels and Redis for real-time functionality.
+python manage.py makemigrations livetracking
+python manage.py makemigrations maintenance
+python manage.py makemigrations scheduling
 
-## Prerequisites
+python manage.py migrate
 
-- Python 3.8+
-- Redis server
-- pip package manager
-
-## Installation
-
-1. Create a virtual environment and activate it:
+python manage.py runserver
