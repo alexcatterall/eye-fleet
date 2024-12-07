@@ -1,39 +1,13 @@
 from rest_framework import serializers
-from telemex.apps.routes.models import (
-    ClientSource, ClientService, ClientStatus,
-    ClientPriority, PaymentStatus, Client,
-    RouteStatus, RoutePriority, Route,
-    CargoType, CargoStatus, Cargo,
-    DriverStatus, Driver,
-    RouteAlertType, RouteAlertPriority, RouteAlertStatus, RouteAlert,
-    RouteReportType, RouteReportStatus, ReportFrequency, ReportFormat, RouteReport,
-    RouteScheduleStatus, RouteScheduleShift, RouteSchedule, TripStatus, Trip
-)
+from eyefleet.apps.scheduling.models.cargo import Cargo
+from eyefleet.apps.scheduling.models.clients import Client
+from eyefleet.apps.scheduling.models.missions import Mission, MissionAssignedEmployee
+from eyefleet.apps.scheduling.models.pilots import Pilot
+from eyefleet.apps.scheduling.models.schedules import MissionSchedule, Trip
 
-# Client related serializers
-class ClientSourceSerializer(serializers.ModelSerializer):
+class CargoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ClientSource
-        fields = '__all__'
-
-class ClientServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ClientService
-        fields = '__all__'
-
-class ClientStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ClientStatus
-        fields = '__all__'
-
-class ClientPrioritySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ClientPriority
-        fields = '__all__'
-
-class PaymentStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PaymentStatus
+        model = Cargo
         fields = '__all__'
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -41,115 +15,24 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         fields = '__all__'
 
-# Route related serializers
-class RouteStatusSerializer(serializers.ModelSerializer):
+class MissionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = RouteStatus
+        model = Mission
         fields = '__all__'
 
-class RoutePrioritySerializer(serializers.ModelSerializer):
+class MissionAssignedEmployeeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = RoutePriority
+        model = MissionAssignedEmployee
         fields = '__all__'
 
-class RouteSerializer(serializers.ModelSerializer):
+class PilotSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Route
+        model = Pilot
         fields = '__all__'
 
-# Cargo related serializers
-class CargoTypeSerializer(serializers.ModelSerializer):
+class MissionScheduleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CargoType
-        fields = '__all__'
-
-class CargoStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CargoStatus
-        fields = '__all__'
-
-class CargoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cargo
-        fields = '__all__'
-
-# Driver related serializers
-class DriverStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DriverStatus
-        fields = '__all__'
-
-class DriverSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Driver
-        fields = '__all__'
-
-# Alert related serializers
-class RouteAlertTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteAlertType
-        fields = '__all__'
-
-class RouteAlertPrioritySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteAlertPriority
-        fields = '__all__'
-
-class RouteAlertStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteAlertStatus
-        fields = '__all__'
-
-class RouteAlertSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteAlert
-        fields = '__all__'
-
-# Report related serializers
-class RouteReportTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteReportType
-        fields = '__all__'
-
-class RouteReportStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteReportStatus
-        fields = '__all__'
-
-class ReportFrequencySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ReportFrequency
-        fields = '__all__'
-
-class ReportFormatSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ReportFormat
-        fields = '__all__'
-
-class RouteReportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteReport
-        fields = '__all__'
-
-# Schedule related serializers
-class RouteScheduleStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteScheduleStatus
-        fields = '__all__'
-
-class RouteScheduleShiftSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteScheduleShift
-        fields = '__all__'
-
-class RouteScheduleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteSchedule
-        fields = '__all__'
-
-class TripStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TripStatus
+        model = MissionSchedule
         fields = '__all__'
 
 class TripSerializer(serializers.ModelSerializer):

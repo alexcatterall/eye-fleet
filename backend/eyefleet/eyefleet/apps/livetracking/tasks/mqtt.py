@@ -1,15 +1,15 @@
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from celery import shared_task
-from telemex.apps.livetracking.models import Device, Indicator
+from eyefleet.apps.livetracking.models import Device, Indicator
 from influxdb_client import InfluxDBClient, Point, BucketRetentionRules
-from telemex.utils.logger import logger
+from eyefleet.utils.logger import logger
 from influxdb_client.client.write_api import SYNCHRONOUS
 from django.conf import settings
-from telemex.utils.machine_learning.driver_behaviour import classify_driver_behavior
-from telemex.utils.machine_learning.emissions_prediction import predict_emissions
-from telemex.utils.machine_learning.fault_detection import detect_faults
-from telemex.utils.machine_learning.fuel_consumption import predict_fuel_consumption
+from eyefleet.utils.machine_learning.driver_behaviour import classify_driver_behavior
+from eyefleet.utils.machine_learning.emissions_prediction import predict_emissions
+from eyefleet.utils.machine_learning.fault_detection import detect_faults
+from eyefleet.utils.machine_learning.fuel_consumption import predict_fuel_consumption
 
 # define influxdb configurations
 INFLUXDB_CONFIG = {

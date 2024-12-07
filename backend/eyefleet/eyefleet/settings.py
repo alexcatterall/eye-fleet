@@ -17,7 +17,7 @@ import sys
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(BASE_DIR,'telemex', 'apps'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'eyefleet', 'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'django_filters',
     'channels',
     'corsheaders',
+    'livetracking',
+    'maintenance',
+    'scheduling',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +80,24 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'eyefleet.wsgi.application'
+ASGI_APPLICATION = 'eyefleet.asgi.application'
 
+
+# CORS Settings
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+CORS_ALLOWED_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -86,7 +105,7 @@ WSGI_APPLICATION = 'eyefleet.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR + 'db.sqlite3',
     }
 }
 

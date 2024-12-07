@@ -1,14 +1,6 @@
 from rest_framework import serializers
-from .models.devices import (
-    Device, DeviceConfiguration, DeviceStatus
-)
-from .models.indicators import Indicator, DataType
-
-# Device Related Serializers
-class DeviceStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DeviceStatus
-        fields = '__all__'
+from eyefleet.apps.livetracking.models.devices import Device, DeviceConfiguration
+from eyefleet.apps.livetracking.models.indicators import Indicator
 
 class DeviceConfigurationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,17 +8,10 @@ class DeviceConfigurationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DeviceSerializer(serializers.ModelSerializer):
-    configuration = DeviceConfigurationSerializer()
-
+    configuration = DeviceConfigurationSerializer(read_only=True)
+    
     class Meta:
         model = Device
-        fields = '__all__'
-
-
-# Indicator Related Serializers
-class DataTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DataType
         fields = '__all__'
 
 class IndicatorSerializer(serializers.ModelSerializer):

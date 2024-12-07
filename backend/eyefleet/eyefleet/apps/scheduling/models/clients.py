@@ -3,83 +3,52 @@ from django.utils import timezone
 from django.core.validators import EmailValidator
 
 
-# DEFINE OPTION MODELS
-class ClientSource(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
+# Client model choices
+CLIENT_SOURCE_CHOICES = [
+    ('google', 'Google'),
+    ('facebook', 'Facebook'), 
+    ('linkedin', 'LinkedIn'),
+    ('referral', 'Referral'),
+    ('direct', 'Direct')
+]
 
-    class Meta:
-        db_table = 'client_sources'
+CLIENT_SERVICE_CHOICES = [
+    ('home-to-school', 'Home to School'),
+    ('patient-transport-services', 'Patient Transport Services')
+]
 
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['google', 'facebook', 'linkedin', 'referral', 'direct']
-        return [cls(id=source) for source in defaults]
+CLIENT_STATUS_CHOICES = [
+    ('active', 'Active'),
+    ('pending', 'Pending'),
+    ('completed', 'Completed'),
+    ('on_hold', 'On Hold')
+]
 
-class ClientService(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
+CLIENT_PRIORITY_CHOICES = [
+    ('high', 'High'),
+    ('medium', 'Medium'),
+    ('low', 'Low')
+]
 
-    class Meta:
-        db_table = 'client_services'
+PAYMENT_STATUS_CHOICES = [
+    ('paid', 'Paid'),
+    ('pending', 'Pending'),
+    ('overdue', 'Overdue')
+]
 
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['home-to-school', 'patient-transport-services']
-        return [cls(id=service) for service in defaults]
+CLIENT_TYPE_CHOICES = [
+    ('individual', 'Individual'),
+    ('company', 'Company'),
+    ('university', 'University'),
+    ('government', 'Government'),
+    ('school', 'School')
+]
 
-class ClientStatus(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'client_statuses'
-
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['active', 'pending', 'completed', 'on_hold']
-        return [cls(id=status) for status in defaults]
-
-class ClientPriority(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'client_priorities'
-
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['High', 'Medium', 'Low']
-        return [cls(id=priority) for priority in defaults]
-
-class PaymentStatus(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'payment_statuses'
-
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['paid', 'pending', 'overdue']
-        return [cls(id=status) for status in defaults]
-
-class ClientType(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'client_types'
-
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['individual', 'company', 'university', 'government', 'school']
-        return [cls(id=type) for type in defaults]
-
-class ClientContactMethod(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)  
-
-    class Meta:
-        db_table = 'client_contact_methods'
-    
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['email', 'phone', 'sms']
-        return [cls(id=method) for method in defaults]
+CLIENT_CONTACT_METHOD_CHOICES = [
+    ('email', 'Email'),
+    ('phone', 'Phone'),
+    ('sms', 'SMS')
+]
 
 
 # DEFINE CORE MODELS
@@ -98,32 +67,32 @@ class Client(models.Model):
     case_ref = models.CharField(max_length=50, unique=True)
     opened_at = models.DateField()
 
-    source = models.ForeignKey(ClientSource, on_delete=models.PROTECT)
-    type = models.ForeignKey(ClientType, on_delete=models.PROTECT)
-    services = models.ForeignKey(ClientService, on_delete=models.PROTECT)
+    source = models.CharField(max_length=50, choices=CLIENT_SOURCE_CHOICES)
+    type = models.CharField(max_length=50, choices=CLIENT_TYPE_CHOICES)
+    services = models.CharField(max_length=50, choices=CLIENT_SERVICE_CHOICES)
 
-    status = models.ForeignKey(ClientStatus, on_delete=models.PROTECT)
+    status = models.CharField(max_length=50, choices=CLIENT_STATUS_CHOICES)
 
     notes = models.TextField(null=True, blank=True)
 
-    priority = models.ForeignKey(
-        ClientPriority, 
-        on_delete=models.SET_NULL,
+    priority = models.CharField(
+        max_length=50,
+        choices=CLIENT_PRIORITY_CHOICES,
         null=True,
         blank=True
     )
     assigned_agent = models.CharField(max_length=100, null=True, blank=True)
     
-    preferred_contact_method = models.ForeignKey(
-        ClientContactMethod,
-        on_delete=models.SET_NULL,
+    preferred_contact_method = models.CharField(
+        max_length=50,
+        choices=CLIENT_CONTACT_METHOD_CHOICES,
         null=True,
         blank=True
     )
 
-    payment_status = models.ForeignKey(
-        PaymentStatus,
-        on_delete=models.SET_NULL,
+    payment_status = models.CharField(
+        max_length=50,
+        choices=PAYMENT_STATUS_CHOICES,
         null=True,
         blank=True
     )
@@ -144,7 +113,7 @@ class Client(models.Model):
 
     def is_active(self) -> bool:
         """Check if the case is active"""
-        return self.status.id == "Active"
+        return self.status == "active"
 
     def update_last_contact(self):
         """Update the last contact timestamp to now"""
@@ -160,12 +129,9 @@ class Client(models.Model):
 
     def set_priority(self, priority: str):
         """Set the priority level for the client"""
-        try:
-            priority_obj = ClientPriority.objects.get(id=priority)
-            self.priority = priority_obj
+        if priority in dict(CLIENT_PRIORITY_CHOICES):
+            self.priority = priority
             self.save()
-        except ClientPriority.DoesNotExist:
-            pass
 
     def schedule_follow_up(self, days: int):
         """Schedule next follow up date"""
@@ -184,16 +150,13 @@ class Client(models.Model):
 
     def update_payment_status(self, status: str):
         """Update the payment status"""
-        try:
-            status_obj = PaymentStatus.objects.get(id=status)
-            self.payment_status = status_obj
+        if status in dict(PAYMENT_STATUS_CHOICES):
+            self.payment_status = status
             self.save()
-        except PaymentStatus.DoesNotExist:
-            pass
 
     def is_overdue(self) -> bool:
         """Check if payment is overdue"""
-        return self.payment_status and self.payment_status.id == "Overdue"
+        return self.payment_status == "overdue"
 
     def needs_follow_up(self) -> bool:
         """Check if follow up is needed"""

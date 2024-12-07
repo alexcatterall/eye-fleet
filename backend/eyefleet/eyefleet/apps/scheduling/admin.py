@@ -1,45 +1,13 @@
 from django.contrib import admin
-from telemex.apps.routes.models import (
-    RouteAlertType, RouteAlertPriority, RouteAlertStatus, RouteAlert,
-    RouteReportType, RouteReportStatus, ReportFrequency, ReportFormat, RouteReport,
-    RouteScheduleStatus, RouteScheduleShift, RouteSchedule, 
-    CargoType, CargoStatus, Cargo,
-    ClientSource, ClientService, ClientStatus, ClientPriority, Client, PaymentStatus,
-    DriverStatus, Driver,
-    RouteStatus, RoutePriority, Route, Trip
-)
+from eyefleet.apps.scheduling.models.missions import Mission, MissionAssignedEmployee
+from eyefleet.apps.scheduling.models.pilots import Pilot
+from eyefleet.apps.scheduling.models.schedules import MissionSchedule, Trip
+from eyefleet.apps.scheduling.models.cargo import Cargo
+
 # Register your models here.
-
-admin.site.register(RouteAlertType)
-admin.site.register(RouteAlertPriority)
-admin.site.register(RouteAlertStatus)
-admin.site.register(RouteAlert)
-
-admin.site.register(RouteReportType)
-admin.site.register(RouteReportStatus)
-admin.site.register(ReportFrequency)
-admin.site.register(ReportFormat)
-admin.site.register(RouteReport)
-
-admin.site.register(RouteScheduleStatus)
-admin.site.register(RouteScheduleShift)
-admin.site.register(RouteSchedule)
-
-admin.site.register(CargoType)
-admin.site.register(CargoStatus)
-admin.site.register(Cargo)
-
-admin.site.register(ClientSource)
-admin.site.register(ClientService)
-admin.site.register(ClientStatus)
-admin.site.register(ClientPriority)
-admin.site.register(Client)
-admin.site.register(PaymentStatus)
-
-admin.site.register(DriverStatus)
-admin.site.register(Driver)
-
-admin.site.register(RouteStatus)
-admin.site.register(RoutePriority)
-admin.site.register(Route)
+admin.site.register(Mission)
 admin.site.register(Trip)
+admin.site.register(MissionAssignedEmployee)
+admin.site.register(Pilot)
+admin.site.register(MissionSchedule)
+admin.site.register(Cargo)

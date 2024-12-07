@@ -1,32 +1,32 @@
 from django.db import models
 
 
-class VehiclePartType(models.Model):
+class AssetPartType(models.Model):
     pass
 
     class Meta:
-        db_table = "vehicle_part_type"
+        db_table = "asset_part_type"
 
-class VehiclePartManufacturer(models.Model):
+class AssetPartManufacturer(models.Model):
     pass
 
     class Meta:
-        db_table = "vehicle_part_manufacturer"
+        db_table = "asset_part_manufacturer"
 
-class VehiclePartSupplier(models.Model):
-    contact_name = models.CharField()
-    contact_phone = models.CharField()
+class AssetPartSupplier(models.Model):
+    contact_name = models.CharField(max_length=100)
+    contact_phone = models.CharField(max_length=20)
     contact_email = models.EmailField()
 
     purchase_url = models.URLField()
     notes = models.TextField()
-    purchase_location = models.CharField()
+    purchase_location = models.CharField(max_length=200)
 
     class Meta:
-        db_table = "vehicle_part_supplier"
+        db_table = "asset_part_supplier"
 
-class VehiclePart(models.Model):
-    part_number = models.CharField()
+class AssetPart(models.Model):
+    part_number = models.CharField(max_length=50)
     after_market = models.BooleanField(default=False)
 
     purchased_at = models.DateField()
@@ -35,4 +35,4 @@ class VehiclePart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        db_table = "vehicle_part"
+        db_table = "asset_part"

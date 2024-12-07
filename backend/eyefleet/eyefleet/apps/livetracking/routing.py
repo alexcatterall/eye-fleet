@@ -1,5 +1,5 @@
 from django.urls import re_path
-from telemex.apps.livetracking.consumer import TelemetryConsumer, GPSConsumer, AnalyticsConsumer
+from eyefleet.apps.livetracking.consumer import TelemetryConsumer, GPSConsumer, AnalyticsConsumer
 
 websocket_urlpatterns = [
     re_path(

@@ -1,21 +1,12 @@
 from django.db import models
-from telemex.utils.logger import logger
 
-# DEFINE OPTION MODELS
-class DataType(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'data_types'
-
-
-    def __str__(self):
-        return self.id
-    
-    @classmethod
-    def get_defaults(cls):
-        defaults = [ 'integer', 'float', 'boolean', 'string' ]
-        return [cls(id=id) for id in defaults]
+# Data type choices
+DATA_TYPE_CHOICES = [
+    ('integer', 'Integer'),
+    ('float', 'Float'), 
+    ('boolean', 'Boolean'),
+    ('string', 'String')
+]
 
 # DEFINE CORE MODELS
 class Indicator(models.Model):
@@ -28,7 +19,9 @@ class Indicator(models.Model):
     compute_func = models.CharField(max_length=255, null=True, 
                                    blank=True,
                                    help_text="Function to compute indicator")
-    data_type = models.ForeignKey(DataType, on_delete=models.PROTECT, null=True, blank=True)
+    data_type = models.CharField(max_length=50, 
+                               choices=DATA_TYPE_CHOICES,
+                               null=True, blank=True)
     unit = models.CharField(max_length=50, default="unk",
                             help_text="unit of measurement")
     CAN_bus_code = models.CharField(max_length=50, null=True, blank=True,
@@ -67,22 +60,22 @@ class Indicator(models.Model):
     def compute_value(self, value):
         if self.computed:
             try:
-                if self.data_type.id == 'integer':
+                if self.data_type == 'integer':
                     value = int(value)
                     return int(eval(self.compute_func))
-                elif self.data_type.id == 'float':
+                elif self.data_type == 'float':
                     value = float(value)
                     return float(eval(self.compute_func))
-                elif self.data_type.id == 'boolean':
+                elif self.data_type == 'boolean':
                     value = bool(value)
                     return bool(eval(self.compute_func))
-                elif self.data_type.id == 'string':
+                elif self.data_type == 'string':
                     value = str(value)
                     return str(eval(self.compute_func))
                 else:
                     return eval(self.compute_func)
             except Exception as e:
-                logger.error(f"Error computing indicator {self.id}: {e}")
+                print(f"Error computing indicator {self.id}: {e}")
         return value
 
     def validate_value(self, value):

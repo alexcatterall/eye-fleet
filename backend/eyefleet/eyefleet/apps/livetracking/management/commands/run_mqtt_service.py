@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
-from telemex.apps.livetracking.mqtthandler import MQTTHandler
-from telemex.utils.logger import logger
+from eyefleet.apps.livetracking.mqtthandler import MQTTHandler
+from eyefleet.utils.logger import logger
 
 class Command(BaseCommand):
     """Django management command to run the MQTT service for vehicle telemetry data."""

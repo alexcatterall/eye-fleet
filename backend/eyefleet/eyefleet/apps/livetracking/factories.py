@@ -2,11 +2,8 @@ import factory
 from factory.django import DjangoModelFactory
 from faker import Faker
 from django.utils import timezone
-from datetime import timedelta
 from decimal import Decimal
-from telemex.apps.vehicles.models import Vehicle
-from telemex.apps.livetracking.models import Device, DeviceConfiguration, DeviceType, DeviceStatus
-
+from eyefleet.apps.livetracking.models.devices import Device, DeviceConfiguration, DEVICE_TYPE_CHOICES, DEVICE_STATUS_CHOICES
 
 fake = Faker()
 
@@ -16,7 +13,7 @@ class DeviceConfigurationFactory(DjangoModelFactory):
 
     name = factory.Faker('word')
     description = factory.Faker('sentence')
-    device_type = factory.Iterator(DeviceType.objects.all())
+    device_type = factory.Iterator([choice[0] for choice in DEVICE_TYPE_CHOICES])
     firmware_version = factory.Faker('numerify', text='v#.#.#')
     settings = factory.Dict({
         'setting1': factory.LazyFunction(
@@ -35,7 +32,7 @@ class DeviceFactory(DjangoModelFactory):
     ip_address = factory.Faker('ipv4')
     connected = factory.Faker('boolean')
     last_pinged = factory.LazyFunction(timezone.now)
-    status = factory.Iterator(DeviceStatus.objects.all())
+    status = factory.Iterator([choice[0] for choice in DEVICE_STATUS_CHOICES])
     @factory.lazy_attribute
     def location(self):
         # Birmingham's approximate bounds
@@ -51,4 +48,4 @@ class DeviceFactory(DjangoModelFactory):
         }
     battery_level = factory.Faker('random_int', min=0, max=100)
     configuration = factory.SubFactory(DeviceConfigurationFactory)
-    assigned_vehicle = factory.Iterator(Vehicle.objects.all())
+    assigned_vehicle = factory.Faker('word')

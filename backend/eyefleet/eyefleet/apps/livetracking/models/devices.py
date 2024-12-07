@@ -1,37 +1,21 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
-from telemex.apps.vehicles.models.vehicles import Vehicle
 import uuid
 
-# DEFINE OPTIONS MODELS
-class DeviceStatus(models.Model):
-    id = models.CharField(max_length=50, primary_key=True, unique=True)
+# Device status options
+DEVICE_STATUS_CHOICES = [
+    ('online', 'Online'),
+    ('offline', 'Offline'), 
+    ('maintenance', 'Maintenance'),
+    ('error', 'Error')
+]
 
-    class Meta:
-        db_table = 'device_statuses'
-
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['online', 'offline', 'maintenance', 'error']
-        return [cls(id=status) for status in defaults]
-
-    def __str__(self):
-        return self.id
-
-class DeviceType(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        db_table = 'device_types'
-
-    def __str__(self):
-        return self.id
-    
-    @classmethod
-    def get_defaults(cls):
-        defaults = ['telemex-hardware', 'autopi']
-        return [cls(id=type_name) for type_name in defaults]
+# Device type options
+DEVICE_TYPE_CHOICES = [
+    ('eyefleet-hardware', 'eyefleet Hardware'),
+    ('autopi', 'AutoPi')
+]
 
 # DEFINE CONFIG MODELS
 class DeviceConfiguration(models.Model):
@@ -40,7 +24,7 @@ class DeviceConfiguration(models.Model):
                           editable=False)
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
-    device_type = models.ForeignKey(DeviceType, on_delete=models.PROTECT)
+    device_type = models.CharField(max_length=50, choices=DEVICE_TYPE_CHOICES)
     firmware_version = models.CharField(max_length=20)
     settings = models.JSONField(default=dict)
     last_updated = models.DateTimeField(auto_now=True)
@@ -71,9 +55,9 @@ class Device(models.Model):
     ip_address = models.GenericIPAddressField()
     connected = models.BooleanField(default=False)
     last_pinged = models.DateTimeField(default=timezone.now,null=True, blank=True)
-    status = models.ForeignKey(
-        DeviceStatus, 
-        on_delete=models.PROTECT,
+    status = models.CharField(
+        max_length=50,
+        choices=DEVICE_STATUS_CHOICES,
         default='offline',
         null=True, blank=True
     )
@@ -87,12 +71,7 @@ class Device(models.Model):
         null=True, blank=True,
         on_delete=models.SET_NULL
     )
-    assigned_vehicle = models.ForeignKey(
-        Vehicle,
-        null=True, blank=True,
-        on_delete=models.SET_NULL,
-        related_name='assigned_device'
-    )           
+    assigned_vehicle = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -121,12 +100,9 @@ class Device(models.Model):
 
     def update_status(self, status: str):
         """Update device status"""
-        try:
-            status_obj = DeviceStatus.objects.get(id=status)
-            self.status = status_obj
+        if status in dict(DEVICE_STATUS_CHOICES):
+            self.status = status
             self.save()
-        except DeviceStatus.DoesNotExist:
-            pass
 
     def update_location(self, lat: float, lng: float):
         """Update device location"""
@@ -135,7 +111,7 @@ class Device(models.Model):
 
     def is_online(self) -> bool:
         """Check if device is online"""
-        return self.status.id == "online" and self.connected
+        return self.status == "online" and self.connected
 
     def has_low_battery(self, threshold: int = 20) -> bool:
         """Check if device has low battery"""
