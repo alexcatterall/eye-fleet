@@ -158,6 +158,3 @@ To run both servers for development:
    npm run dev
    ```
 
-## Note
-
-Make sure to replace the Google Maps API key in `my-fleet/page.tsx` with your own key for the map functionality to work.
