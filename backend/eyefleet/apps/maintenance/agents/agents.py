@@ -90,4 +90,9 @@ class MaintenanceAgents:
         for source in response.sources:
                 tools.append(source.tool_name)
 
+        return {
+            'response': str(response),
+            'tools_used': tools
+        }
+
         
