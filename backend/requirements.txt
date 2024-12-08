@@ -23,3 +23,10 @@ python-dotenv
 factory-boy
 Faker
 ortools
+llama-index
+crewai
+googlemaps
+llama-index-agent-openai
+llama-index-llms-openai
+openai
+llama-index-experimental
