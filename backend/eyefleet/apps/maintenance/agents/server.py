@@ -1,7 +1,5 @@
 from typing import Dict, Any
 from .agents import MaintenanceAgents
-import re
-from datetime import datetime
 
 class MaintenanceAIService:
     """Service for handling AI-powered maintenance operations with natural language understanding"""

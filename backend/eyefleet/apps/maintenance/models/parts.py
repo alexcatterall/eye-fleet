@@ -32,6 +32,7 @@ class AssetPartSupplier(models.Model):
         db_table = "asset_part_supplier"
 
 class AssetPart(models.Model):
+    id = models.AutoField(primary_key=True)
     part_number = models.CharField(max_length=50)
     after_market = models.BooleanField(default=False)
     

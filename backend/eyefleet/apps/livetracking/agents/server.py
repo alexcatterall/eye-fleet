@@ -13,8 +13,9 @@ class LivetrackingAIService:
         Single entry point for all telemetry-related queries
         Uses OpenAI agent to handle requests
         """
+        print("--- making query to server ----")
         try:
-            result = self.agent.chat(message)
+            result = self.agents.query(message)
             return {
                 "response": str(result),
                 "success": True
