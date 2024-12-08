@@ -5,7 +5,8 @@ from eyefleet.apps.scheduling.viewsets import (
     MissionAssignedEmployeeViewSet,
     MissionScheduleViewSet,
     TripViewSet,
-    CargoViewSet
+    CargoViewSet, 
+    AgentViewSet
 )
 
 router = DefaultRouter()
@@ -16,7 +17,7 @@ router.register(r'mission-assigned-employees', MissionAssignedEmployeeViewSet)
 router.register(r'mission-schedules', MissionScheduleViewSet)
 router.register(r'trips', TripViewSet)
 router.register(r'cargos', CargoViewSet)
-
+router.register(r'agent', AgentViewSet, basename='agent')
 urlpatterns = [
     path('', include(router.urls)),
 ]

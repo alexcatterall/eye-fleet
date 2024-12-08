@@ -5,7 +5,7 @@ from .viewsets import (
     MaintenanceRequestViewSet, MaintenanceViewSet, InspectionTypeViewSet,
     InspectionStatusViewSet, LocationViewSet, InspectionFieldViewSet,
     InspectionFieldResponseViewSet, InspectionResponseViewSet, InspectionViewSet,
-    AssetViewSet, AssetPartSupplierViewSet, AssetPartViewSet
+    AssetViewSet, AssetPartSupplierViewSet, AssetPartViewSet, AgentViewSet
 )
 
 router = DefaultRouter()
@@ -32,6 +32,9 @@ router.register(r'assets', AssetViewSet)
 # Parts URLs
 router.register(r'asset-part-suppliers', AssetPartSupplierViewSet)
 router.register(r'asset-parts', AssetPartViewSet)
+
+# Register Agent endpoints
+router.register('agent', AgentViewSet, basename='agent')
 
 urlpatterns = [
     path('', include(router.urls)),
