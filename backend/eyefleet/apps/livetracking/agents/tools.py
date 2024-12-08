@@ -2,8 +2,12 @@ import os
 import pandas as pd
 from influxdb_client import InfluxDBClient
 from django.conf import settings
-from llama_index.core.query_engine import PandasQueryEngine
+from llama_index.experimental.query_engine import PandasQueryEngine
 from ..models import Device, Indicator
+
+
+
+
 
 class LivetrackingTools:
     """Tools for livetracking data analysis and querying"""
@@ -89,3 +93,65 @@ class LivetrackingTools:
         
         return f"Analysis for {indicator} on {device_id}:\n" + \
                "\n".join([f"{k}: {v:.2f}" for k, v in stats.items()])
+
+    def query_device_info(self, query: str) -> str:
+        """Query device information using natural language when asked about devices use this tool"""
+        # Convert Device queryset to DataFrame
+        devices = Device.objects.all()
+        device_data = [
+            {
+                'id': device.id,
+                'name': device.name,
+                'status': device.status,
+                'ip_address': device.ip_address,
+                'location': device.location,
+                'battery_level': device.battery_level,
+                'device_type': device.device_type,
+                'firmware_version': device.firmware_version,
+                'assigned_asset': device.assigned_asset,
+                # Add other relevant device fields
+            }
+            for device in devices
+        ]
+        df = pd.DataFrame(device_data)
+        
+        # Create query engine and execute query
+        engine = PandasQueryEngine(df=df)
+        response = engine.query(query)
+        return str(response)
+
+    def query_data_indicator_info(self, query: str) -> str:
+        """Query data indicator information using natural language when asked about indicators use this tool"""
+        # Convert Indicator queryset to DataFrame
+        indicators = Indicator.objects.all()
+        indicator_data = [
+            {
+                'id': indicator.id,
+                'name': indicator.name,
+                'data_type': indicator.data_type,
+                'min_value': indicator.min_value,
+                'max_value': indicator.max_value,
+            }
+            for indicator in indicators
+        ]
+        df = pd.DataFrame(indicator_data)
+        
+        # Create query engine and execute query
+        engine = PandasQueryEngine(df=df)
+        response = engine.query(query)
+        return str(response)
+
+    def validate_indicator_value(self, indicator_id: str, value: float) -> dict:
+        """Validate if a value is within the indicator's defined range"""
+        try:
+            indicator = Indicator.objects.get(id=indicator_id)
+            is_valid = indicator.validate_value(value)
+            return {
+                'indicator': indicator.name,
+                'value': value,
+                'is_valid': is_valid,
+                'min_value': indicator.min_value,
+                'max_value': indicator.max_value
+            }
+        except Indicator.DoesNotExist:
+            return {'error': f'Indicator {indicator_id} not found'}

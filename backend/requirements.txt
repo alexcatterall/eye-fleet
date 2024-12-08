@@ -29,4 +29,4 @@ googlemaps
 llama-index-agent-openai
 llama-index-llms-openai
 openai
-pipecat-ai[daily,cartesia]
+llama-index-experimental

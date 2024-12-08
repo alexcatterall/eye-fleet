@@ -1,6 +1,9 @@
 from llama_index.core.tools import FunctionTool
 from llama_index.agent.openai import OpenAIAgent
+from llama_index.core.agent import ReActAgent
+from typing import List
 from llama_index.llms.openai import OpenAI
+from llama_index.core.base.llms.types import ChatMessage
 from .tools import SchedulingTools
 from .knowledgebase import SchedulingIndex
 
@@ -45,18 +48,24 @@ class SchedulingAgents:
         ]
 
         # Create agent with tools and knowledge base
-        agent = OpenAIAgent.from_tools(
-            tools=scheduling_tools,
-            system_prompt="""You are an expert scheduling analyst that helps users 
-            optimize mission schedules, routes, and delivery sequences. You can create
-            schedules, analyze conflicts, track missions, and provide insights from
-            historical scheduling data."""
-        )
+        llm = OpenAI(model="gpt-4o-mini", system_prompt="You are an expert scheduling analyst that helps users optimize mission schedules, routes, and delivery sequences. You can create schedules, analyze conflicts, track missions, and provide insights from historical scheduling data.")
+        agent = ReActAgent.from_tools(tools=scheduling_tools, llm=llm, verbose=True)
         
         return agent
     
-    def query(self, query_text: str):
+    def query(self, query_text: str, chat_history: List[ChatMessage] = None):
         """Query the agent with a natural language request"""
         agent = self.create_agent()
-        response = agent.chat(query_text)
-        return str(response)
+        print("--- making query to agents ----")
+        response = agent.chat(query_text, chat_history)
+
+        print("the tools used are: ", response.sources)
+        tools = []
+
+        for source in response.sources:
+            tools.append(source.tool_name)
+
+        return {
+            'response': str(response),
+            'tools_used': tools
+        }

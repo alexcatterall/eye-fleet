@@ -1,9 +1,14 @@
 from typing import Dict, Any
+import pandas as pd
 from django.utils import timezone
 from datetime import datetime, timedelta
 from ..models.missions import Mission
-from ..models.schedules import MissionSchedule, Trip
+from ..models.schedules import MissionSchedule
+from ..models.cargo import Cargo
+from ..models.clients import Client
+from ..models.pilots import Pilot
 from ..scheduler import RoutePathOptimizer, MissionScheduler, MissionOptimizer
+from llama_index.experimental.query_engine import PandasQueryEngine
 
 class SchedulingTools:
     """Tools for scheduling-related operations"""
@@ -36,22 +41,6 @@ class SchedulingTools:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def schedule_mission(self, mission_id: str, start_date: str, 
-                        end_date: str) -> Dict[str, Any]:
-        """Schedule a mission"""
-        try:
-            result = self.scheduler.schedule_missions(
-                start_date=datetime.fromisoformat(start_date),
-                end_date=datetime.fromisoformat(end_date),
-                mission_ids=[mission_id]
-            )
-            
-            return {
-                "success": True,
-                "schedule": result
-            }
-        except Exception as e:
-            return {"success": False, "error": str(e)}
 
     def analyze_route_patterns(self, mission_id: str) -> Dict[str, Any]:
         """Analyze historical route patterns for a mission"""
@@ -149,3 +138,88 @@ class SchedulingTools:
             }
         except Exception as e:
             return {"success": False, "error": str(e)}
+
+    def query_cargo(self, query: str) -> str:
+        """Query cargo information using natural language"""
+        cargo = Cargo.objects.all()
+        cargo_data = [
+            {
+                'id': c.id,
+                'type': c.type,
+                'weight': c.weight,
+                'volume': c.volume,
+                'status': c.status,
+            }
+            for c in cargo
+        ]
+        df = pd.DataFrame(cargo_data)
+        engine = PandasQueryEngine(df=df)
+        response = engine.query(query)
+        return str(response)
+
+    def query_clients(self, query: str) -> str:
+        """Query client information using natural language"""
+        clients = Client.objects.all()
+        client_data = [
+            {
+                'id': c.id,
+                'name': c.name,
+                'address': c.address,
+                'status': c.status
+            }
+            for c in clients
+        ]
+        df = pd.DataFrame(client_data)
+        engine = PandasQueryEngine(df=df)
+        response = engine.query(query)
+        return str(response)
+
+    def query_missions(self, query: str) -> str:
+        """Query mission information using natural language"""
+        missions = Mission.objects.all()
+        mission_data = [
+            {
+                'id': m.id,
+                'status': m.status,
+                'priority': m.priority,
+            }
+            for m in missions
+        ]
+        df = pd.DataFrame(mission_data)
+        engine = PandasQueryEngine(df=df)
+        response = engine.query(query)
+        return str(response)
+
+    def query_pilots(self, query: str) -> str:
+        """Query pilot information using natural language"""
+        pilots = Pilot.objects.all()
+        pilot_data = [
+            {
+                'id': p.id,
+                'license_number': p.license_number,
+                'status': p.status,
+            }
+            for p in pilots
+        ]
+        df = pd.DataFrame(pilot_data)
+        engine = PandasQueryEngine(df=df)
+        response = engine.query(query)
+        return str(response)
+
+    def query_schedules(self, query: str) -> str:
+        """Query schedule information using natural language"""
+        schedules = MissionSchedule.objects.all()
+        schedule_data = [
+            {
+                'id': s.id,
+                'mission': s.reference_mission.id,
+                'start_time': s.start_time,
+                'end_time': s.end_time,
+                'status': s.status,
+            }
+            for s in schedules
+        ]
+        df = pd.DataFrame(schedule_data)
+        engine = PandasQueryEngine(df=df)
+        response = engine.query(query)
+        return str(response)

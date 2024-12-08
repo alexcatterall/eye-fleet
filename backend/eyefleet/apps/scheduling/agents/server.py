@@ -14,7 +14,7 @@ class SchedulingAIService:
         Uses OpenAI agent to handle requests
         """
         try:
-            result = self.agent.chat(message)
+            result = self.agents.query(message)
             return {
                 "response": str(result),
                 "success": True
