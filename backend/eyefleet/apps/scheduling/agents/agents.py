@@ -26,11 +26,6 @@ class SchedulingAgents:
                 description="Optimize routes and delivery sequences for missions"
             ),
             FunctionTool.from_defaults(
-                fn=self.tools.schedule_mission,
-                name="schedule_mission",
-                description="Create and optimize mission schedules based on requirements"
-            ),
-            FunctionTool.from_defaults(
                 fn=self.tools.track_mission,
                 name="track_mission",
                 description="Track and monitor ongoing mission execution"
@@ -39,6 +34,36 @@ class SchedulingAgents:
                 fn=self.tools.handle_mission_updates,
                 name="handle_mission_updates",
                 description="Process and handle real-time mission updates"
+            ),
+            FunctionTool.from_defaults(
+                fn=self.tools.manage_mission_changes,
+                name="manage_mission_changes",
+                description="Manage and apply changes to mission parameters"
+            ),
+            FunctionTool.from_defaults(
+                fn=self.tools.query_cargo,
+                name="query_cargo",
+                description="Query cargo information using natural language"
+            ),
+            FunctionTool.from_defaults(
+                fn=self.tools.query_clients,
+                name="query_clients", 
+                description="Query client information using natural language"
+            ),
+            FunctionTool.from_defaults(
+                fn=self.tools.query_missions,
+                name="query_missions",
+                description="Query mission information using natural language"
+            ),
+            FunctionTool.from_defaults(
+                fn=self.tools.query_pilots,
+                name="query_pilots",
+                description="Query pilot information using natural language"
+            ),
+            FunctionTool.from_defaults(
+                fn=self.tools.query_schedules,
+                name="query_schedules",
+                description="Query schedule information using natural language"
             ),
             FunctionTool.from_defaults(
                 fn=self.knowledge_base.query,
