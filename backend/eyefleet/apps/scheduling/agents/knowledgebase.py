@@ -1,9 +1,8 @@
-from llama_index import VectorStoreIndex, Document
-from llama_index.node_parser import SimpleNodeParser
+from llama_index.core import VectorStoreIndex, Document
+from llama_index.core.node_parser import SimpleNodeParser
 from typing import List
 from ..models.missions import Mission
-from ..models.schedules import MissionSchedule, Trip
-from ..models.cargo import Cargo
+from ..models.schedules import MissionSchedule
 
 class SchedulingIndex:
     """Manages the LlamaIndex document store for scheduling data"""

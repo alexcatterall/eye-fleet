@@ -18,6 +18,10 @@ from eyefleet.apps.scheduling.serializers import (
     TripSerializer,
     CargoSerializer
 )
+from eyefleet.apps.scheduling.agents.server import SchedulingAIService
+from eyefleet.apps.maintenance.models import Asset
+from datetime import datetime
+from eyefleet.apps.scheduling.scheduler import MissionOptimizer, MissionScheduler
 
 class MissionViewSet(viewsets.ModelViewSet):
     queryset = Mission.objects.all()
@@ -167,3 +171,37 @@ class CargoViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['mission']
     search_fields = ['id', 'description']
+
+from rest_framework import serializers
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+
+class SchedulingAgentChatSerializer(serializers.Serializer):
+    message = serializers.CharField(help_text="Message to send to the maintenance AI agent")
+
+class SchedulingAgentResponseSerializer(serializers.Serializer):
+    response = serializers.CharField(help_text="Response from the maintenance AI agent")
+
+class AgentViewSet(viewsets.ViewSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ai_service = SchedulingAIService()
+
+    @action(detail=False, methods=['post'])
+    @swagger_auto_schema(
+        request_body=SchedulingAgentChatSerializer,
+        responses={200: SchedulingAgentResponseSerializer}
+    )
+    def chat(self, request):
+        serializer = SchedulingAgentChatSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+            
+        message = serializer.validated_data['message']
+        response = self.ai_service.chat(message)
+        
+        response_serializer = SchedulingAgentResponseSerializer(data={'response': response})
+        response_serializer.is_valid()
+        return Response(response_serializer.data)
+

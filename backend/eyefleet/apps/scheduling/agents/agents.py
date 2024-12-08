@@ -1,4 +1,6 @@
-from crewai import Agent, Task, Crew
+from llama_index.core.tools import FunctionTool
+from llama_index.agent.openai import OpenAIAgent
+from llama_index.llms.openai import OpenAI
 from .tools import SchedulingTools
 from .knowledgebase import SchedulingIndex
 
@@ -7,88 +9,54 @@ class SchedulingAgents:
     
     def __init__(self):
         self.tools = SchedulingTools()
-        self.index = SchedulingIndex()
-        self.index.build_index()
+        self.knowledge_base = SchedulingIndex()
+        self.knowledge_base.build_index()
         
-    def create_agents(self):
-        """Create specialized scheduling agents"""
+    def create_agent(self):
+        """Create a LlamaIndex agent with scheduling tools and knowledge"""
         
-        # Route Optimizer Agent
-        route_optimizer = Agent(
-            name="Route Optimizer",
-            goal="Optimize routes and delivery sequences",
-            backstory="""Expert in route optimization and logistics planning with 
-            deep understanding of vehicle routing problems.""",
-            tools=[
-                self.tools.optimize_route,
-                self.tools.analyze_route_patterns
-            ]
-        )
-        
-        # Schedule Planner Agent
-        schedule_planner = Agent(
-            name="Schedule Planner",
-            goal="Create and optimize mission schedules",
-            backstory="""Scheduling expert specialized in resource allocation 
-            and timeline optimization.""",
-            tools=[
-                self.tools.schedule_mission,
-                self.tools.optimize_schedule,
-                self.tools.analyze_schedule_conflicts
-            ]
-        )
-        
-        # Mission Coordinator Agent
-        mission_coordinator = Agent(
-            name="Mission Coordinator",
-            goal="Coordinate and track mission execution",
-            backstory="""Mission coordination specialist focused on real-time 
-            tracking and adjustment of ongoing missions.""",
-            tools=[
-                self.tools.track_mission,
-                self.tools.handle_mission_updates,
-                self.tools.manage_mission_changes
-            ]
-        )
-        
-        # Knowledge Base Agent
-        knowledge_agent = Agent(
-            name="Scheduling Knowledge Base",
-            goal="Provide scheduling insights and historical data",
-            backstory="""Scheduling knowledge expert with access to historical 
-            mission data and performance metrics.""",
-            tools=[self.index.query]
-        )
-        
-        return [route_optimizer, schedule_planner, mission_coordinator, knowledge_agent]
-    
-    def create_crew(self):
-        """Create a scheduling crew with all agents"""
-        agents = self.create_agents()
-        return Crew(
-            agents=agents,
-            tasks=self.get_default_tasks()
-        )
-    
-    def get_default_tasks(self):
-        """Define default tasks for the scheduling crew"""
-        agents = self.create_agents()
-        return [
-            Task(
-                description="""Analyze route patterns and optimize delivery sequences""",
-                agent=agents[0]  # Route Optimizer
+        # Create function tools
+        scheduling_tools = [
+            FunctionTool.from_defaults(
+                fn=self.tools.optimize_route,
+                name="optimize_route",
+                description="Optimize routes and delivery sequences for missions"
             ),
-            Task(
-                description="""Create optimal mission schedules based on 
-                requirements and constraints""",
-                agent=agents[1]  # Schedule Planner
+            FunctionTool.from_defaults(
+                fn=self.tools.schedule_mission,
+                name="schedule_mission",
+                description="Create and optimize mission schedules based on requirements"
             ),
-            Task(
-                description="""Coordinate mission execution and handle real-time updates""",
-                agent=agents[2]  # Mission Coordinator
+            FunctionTool.from_defaults(
+                fn=self.tools.track_mission,
+                name="track_mission",
+                description="Track and monitor ongoing mission execution"
             ),
-            Task(
-                description="""Provide relevant historical data and insights""",
-                agent=agents[3]  # Knowledge Base
+            FunctionTool.from_defaults(
+                fn=self.tools.handle_mission_updates,
+                name="handle_mission_updates",
+                description="Process and handle real-time mission updates"
+            ),
+            FunctionTool.from_defaults(
+                fn=self.knowledge_base.query,
+                name="query_knowledge_base",
+                description="Query the scheduling knowledge base"
             )
         ]
+
+        # Create agent with tools and knowledge base
+        agent = OpenAIAgent.from_tools(
+            tools=scheduling_tools,
+            system_prompt="""You are an expert scheduling analyst that helps users 
+            optimize mission schedules, routes, and delivery sequences. You can create
+            schedules, analyze conflicts, track missions, and provide insights from
+            historical scheduling data."""
+        )
+        
+        return agent
+    
+    def query(self, query_text: str):
+        """Query the agent with a natural language request"""
+        agent = self.create_agent()
+        response = agent.chat(query_text)
+        return str(response)
