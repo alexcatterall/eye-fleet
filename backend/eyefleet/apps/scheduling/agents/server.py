@@ -15,10 +15,7 @@ class SchedulingAIService:
         """
         try:
             result = self.agents.query(message)
-            return {
-                "response": str(result),
-                "success": True
-            }
+            return result
         except Exception as e:
             return {
                 "response": f"I encountered an error: {str(e)}",
