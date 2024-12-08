@@ -21,12 +21,16 @@ from rest_framework import serializers
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-
 class LivetrackingAgentChatSerializer(serializers.Serializer):
     message = serializers.CharField(help_text="Message to send to the maintenance AI agent")
 
 class LivetrackingAgentResponseSerializer(serializers.Serializer):
     response = serializers.CharField(help_text="Response from the maintenance AI agent")
+    tools_used = serializers.ListField(
+        child=serializers.CharField(),
+        help_text="List of tools used by the agent",
+        required=False
+    )
 
 class AgentViewSet(viewsets.ViewSet):
     def __init__(self, *args, **kwargs):
@@ -46,6 +50,6 @@ class AgentViewSet(viewsets.ViewSet):
         message = serializer.validated_data['message']
         response = self.ai_service.chat(message)
         
-        response_serializer = LivetrackingAgentResponseSerializer(data={'response': response})
+        response_serializer = LivetrackingAgentResponseSerializer(data=response)
         response_serializer.is_valid()
         return Response(response_serializer.data)

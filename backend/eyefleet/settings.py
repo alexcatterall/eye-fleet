@@ -162,7 +162,7 @@ ASGI_APPLICATION = 'eyefleet.asgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-GOOGLE_MAPS_API_KEY = 'AIzaSyDxI8fU2MfkhiUbD2zaatEn63zujWH7Gmw'
+GOOGLE_MAPS_API_KEY = 'AIzaSyCL0m51xYWGl2BO7kVQsOOdVdJHJfueST0'
 
 # MQTT Configuration
 MQTT_BROKER_HOST = os.environ.get('MQTT_BROKER_HOST', 'localhost')
