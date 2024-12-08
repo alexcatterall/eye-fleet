@@ -27,34 +27,26 @@ export default function Home() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
           {/* My Fleet Card */}
           <Link href="/my-fleet" className="transform hover:scale-105 transition-transform duration-200">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl h-full">
               <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">My Fleet</h2>
               <p className="text-gray-600 dark:text-gray-300">View and manage your entire fleet in one place</p>
             </div>
           </Link>
 
-          {/* Todo Card */}
-          <Link href="/todo" className="transform hover:scale-105 transition-transform duration-200">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl">
-              <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">To-do</h2>
-              <p className="text-gray-600 dark:text-gray-300">Track and manage maintenance tasks</p>
-            </div>
-          </Link>
-
-          {/* Vehicle Card */}
-          <Link href="/vehicle" className="transform hover:scale-105 transition-transform duration-200">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl">
-              <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Vehicle</h2>
-              <p className="text-gray-600 dark:text-gray-300">View detailed vehicle information</p>
+          {/* Fleet Vision Card */}
+          <Link href="/fleet-vision" className="transform hover:scale-105 transition-transform duration-200">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl h-full">
+              <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Fleet Vision</h2>
+              <p className="text-gray-600 dark:text-gray-300">Interactive map view with real-time chat functionality</p>
             </div>
           </Link>
 
           {/* Add Vehicle Card */}
           <Link href="/add-vehicle" className="transform hover:scale-105 transition-transform duration-200">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl h-full">
               <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Add Vehicle</h2>
               <p className="text-gray-600 dark:text-gray-300">Add a new vehicle to your fleet</p>
             </div>
