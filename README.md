@@ -1,5 +1,7 @@
-![Eye Fleet](/public/eye_fleet_logo.png)
-![Entrepreneur First Hack](/public/ef_hack.avif)
+<div align="center">
+  <img src="/public/ef_hack.avif" alt="Entrepreneur First Hack" width="200" style="margin-right: 20px"/>
+  <img src="/public/eye_fleet_logo.png" alt="Eye Fleet" width="200"/>
+</div>
 
 # Eye Fleet - Modern Fleet Management System
 
