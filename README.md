@@ -1,5 +1,5 @@
-![Eye Fleet](Public/eye_fleet_logo.png)
-![Entrepreneur First Hack](Public/EF_hack.avif)
+![Eye Fleet](/public/eye_fleet_logo.png)
+![Entrepreneur First Hack](/public/ef_hack.avif)
 
 # Eye Fleet - Modern Fleet Management System
 
@@ -43,7 +43,6 @@ eye-fleet/
 
 ```
 
-## 🛠️ Quick Start Guide
 
 ### Backend Setup
 
