@@ -1,160 +1,96 @@
-# Eye Fleet - Fleet Management System
+![Eye Fleet](Public/eye_fleet_logo.png)
+![Entrepreneur First Hack](Public/EF_hack.avif)
 
-A comprehensive fleet management system built with Next.js frontend and Django backend.
+# Eye Fleet - Modern Fleet Management System
 
-## Project Structure
+[![Built with Next.js](https://img.shields.io/badge/Built%20with-Next.js-000000?style=flat-square&logo=Next.js)](https://nextjs.org/)
+[![Backend: Django](https://img.shields.io/badge/Backend-Django-092E20?style=flat-square&logo=django)](https://www.djangoproject.com/)
+
+We try to build an intelligent fleet management system that leverages AI to provide intelligent vehicle tracking, maintenance scheduling, and fleet optimisation.
+
+## 👥 Team
+- **Members**: [Kosi](https://github.com/asuzukosi) and [Alex](https://github.com/alexcatterall)
+- **Event**: Entrepreneur First Fall Hack
+- **Talent Investor**: Amy Brese
+- **Date**: December 7th-8th 2024
+- [View Presentation](https://docs.google.com/presentation/d/1WtD_G2vL_SqJvIVu5_JGixV7Ah6BgdQJwzBHdljkFYc/edit?usp=sharing)
+
+## 🚀 Key Features
+
+- **Real-time Fleet Dashboard**: Monitor your entire fleet at a glance
+- **Vehicle Management**: Comprehensive vehicle tracking and information
+- **Interactive Map**: Live location tracking with route visualization
+- **AI-Powered Insights**: Intelligent fleet analysis using Gemma-2b
+- **Maintenance Tracking**: Automated maintenance scheduling
+- **Dark Mode Support**: Enhanced UI experience
+- **Responsive Design**: Optimized for all devices
+
+## 🏗️ Project Structure
 
 ```
 eye-fleet/
-├── frontend/          # Next.js frontend
-│   ├── src/
-│   │   └── app/      # Next.js pages and components
-│   └── package.json
-└── backend/          # Django backend
-    └── eyefleet/
-        ├── manage.py
-        └── eyefleet/  # Django settings
+├── frontend/          # Next.js frontend application
+│   ├── src/          # Source code
+│   │   ├── app/      # Next.js pages and components
+│   │   ├── styles/   # Global styles and themes
+│   │   └── lib/      # Utility functions and helpers
+│   └── package.json  # Frontend dependencies
+├── backend/          # Django backend services
+   └── eyefleet/
+     ├── manage.py
+     ├── api/      # REST API endpoints 
+        └── eyefleet/ # Core settings
+
 ```
 
-## Setup Instructions
+## 🛠️ Quick Start Guide
 
-### Backend Setup (Django)
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend/eyefleet
-   ```
-
-2. Install Python dependencies:
-   ```bash
-   pip3 install django djangorestframework django-cors-headers
-   ```
-
-3. Apply database migrations:
-   ```bash
-   python3 manage.py makemigrations
-   python3 manage.py migrate
-   ```
-
-4. Start the Django development server:
-   ```bash
-   python3 manage.py runserver
-   ```
-   The backend will be available at `http://localhost:8000/docs/`
-
-### Frontend Setup (Next.js)
-
-1. From the project root directory, install Node.js dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Start the Next.js development server:
-   ```bash
-   npm run dev
-   ```
-   The frontend will be available at `http://localhost:3000`
-
-## Ollama API Setup
-
-The fleet-vision page includes an AI assistant powered by Gemma-2b through Ollama. Follow these steps to set it up:
-
-### 1. Install Ollama
-
-First, install Ollama on your system:
+### Backend Setup
 
 ```bash
-curl -fsSL https://ollama.com/install.sh | sh
+# Navigate to backend directory
+cd backend/eyefleet
+
+# Install dependencies
+pip3 install django djangorestframework django-cors-headers
+
+# Apply database migrations
+python3 manage.py makemigrations
+python3 manage.py migrate
+
+# Start Django server
+python3 manage.py runserver
 ```
+Backend API will be available at `http://localhost:8000/docs/`
 
-### 2. Pull the Gemma-2b Model
-
-After installing Ollama, pull the Gemma-2b model:
+### Frontend Setup
 
 ```bash
-ollama pull gemma2:2b
+# Navigate to frontend directory
+cd eye-fleet
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
-
-### 3. Start Ollama Server
-
-Start the Ollama server in a terminal:
-
-```bash
-ollama serve
-```
-
-### 4. Set Up Python Flask Server
-
-The Flask server acts as a bridge between the frontend and Ollama. Set it up as follows:
-
-1. Install Python dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-2. Start the Flask server:
-```bash
-# From the project root directory
-python3 ollama_api/generate.py
-```
-
-The Flask server will run on `http://localhost:5328` and provide the following endpoint:
-- POST `/ollama_api/generate`: Handles chat messages and communicates with Ollama
-
-### Verification
-
-To verify everything is working:
-
-1. Ensure Ollama server is running (default: http://localhost:11434)
-2. Ensure Flask server is running (http://localhost:5328)
-3. Navigate to the fleet-vision page in your Next.js app
-4. Try sending a message in the chat interface
-
-### Troubleshooting
-
-If you encounter issues:
-
-1. Check if Ollama server is running:
-```bash
-curl http://localhost:11434/api/tags
-```
-
-2. Check if Flask server is running:
-```bash
-curl http://localhost:5328/ollama_api/generate -X POST -H "Content-Type: application/json" -d '{"messages":[{"role":"user","content":"Hello"}]}'
-```
-
-3. Common issues:
-   - "Network Error": Make sure both Ollama and Flask servers are running
-   - "Model not found": Run `ollama pull gemma2:2b` again
-   - CORS errors: Ensure Flask server is running with CORS enabled
-
-## Features
-
-- Add new vehicles with detailed information
-- View fleet overview with statistics
-- Interactive map showing vehicle locations
-- Comprehensive vehicle list with status indicators
-- Dark mode support
-- Responsive design for all screen sizes
-
-## API Endpoints
+Frontend will be available at `http://localhost:3000`
 
 
-add an asset:(http://localhost:8000/api/maintenance/assets/) 
+## 🔌 API Reference
 
-## Development
+| Endpoint | Method | Description | Example Request |
+|----------|--------|-------------|-----------------|
+| `/api/maintenance/assets/` | POST | Add new vehicle | `{"name": "Truck 1", "type": "Heavy Duty"}` |
+| `/api/maintenance/assets/` | GET | List all vehicles | N/A |
+| `/api/fleet/status/` | GET | Fleet overview | N/A |
 
-To run both servers for development:
+## 📄 License
 
-1. Start the Django backend:
-   ```bash
-   cd backend/eyefleet
-   python3 manage.py runserver
-   ```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-2. In a new terminal, start the Next.js frontend:
-   ```bash
-   npm run dev
-   ```
+## 🙏 Acknowledgments
 
+- Entrepreneur First for hosting the Fall Hack
+- Amy Brese for talent investment and guidance
