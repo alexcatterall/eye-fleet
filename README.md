@@ -94,4 +94,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - Entrepreneur First for hosting the Fall Hack
-- Amy Brese for talent investment and guidance
+- Amy Brese for support!
